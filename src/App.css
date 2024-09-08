@@ -1,0 +1,133 @@
+/* Splash Screen Styling */
+.splash-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #4682B4; /* Blue background */
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  .logo2 {
+    width: 430px; /* Set the width of the logo */
+    height: auto; /* Maintain aspect ratio */
+    position: relative; /* Use relative positioning if you want to position it based on its normal position */
+    top: -21px; /* Move the logo 20px down from its normal position */
+    left: -30px; /* Move the logo 50px to the right from its normal position */
+    /* You can also use absolute positioning if you want more control over its placement */
+    /* position: absolute; */
+    /* top: 20px; */
+    /* left: 50px; */
+}
+  
+  .slogan {
+    font-size: 34px;
+    margin-top: 20px;
+  }
+  
+ /* Login Page Styling */
+.login-page,.create-account-page{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Header remains at the top */
+  .login-header {
+    width: 100%;
+    background-color: yellow; /* Yellow stripe at the top */
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .login-header h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  /* Form wrapper to center the login form */
+  .form-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -290px; /* Moves the container up by 20px */
+    /* Alternatively, you can use positioning */
+    position: relative;
+    top: -20px; /* Moves the container up by 20px */
+}
+
+  /* Actual login form styling */
+  .login-form,.create-account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: white;
+  }
+  
+  .login-form label,.create-account-form label {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .login-form input,.create-account-form input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .login-button,.create-account-button {
+    background-color: #007bff; /* Blue button */
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .login-button:hover,.create-account-button:hover  {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .create-account {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  .create-account a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .create-account a:hover {
+    text-decoration: underline;
+  }
+  /* Add these styles to your App.css */
+.already-have-account {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .go-to-login-button {
+    background-color: #007bff; /* Blue button */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .go-to-login-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  

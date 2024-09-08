@@ -1,0 +1,284 @@
+/* Ensure the entire page fits the screen size */
+.home-page {
+    font-family: Arial, sans-serif;
+    background-color: rgb(255, 255, 255);
+    min-height: 100vh; /* Ensures it takes at least the full viewport height */
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Header Styling */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding is included in the total width */
+}
+
+/* Logo */
+.logo {
+    width: 15%; /* Relative width for responsiveness */
+    max-width: 200px; /* Ensure the logo doesn't grow too large */
+}
+
+/* Yellow Stripe */
+.yellow-stripe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; 
+    height: 30px;
+    background-color: rgb(255, 221, 0);
+}
+
+/* Welcome Header */
+.welcome-header {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    top: 10px;
+    left: -08%;
+    font-size: 2.5vw; /* Responsive font size based on viewport width */
+    background: linear-gradient(to right, rgb(2, 145, 255), rgb(255, 204, 0), lightblue);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Icons Styling */
+.icons {
+    position: absolute;
+    top: 30px;
+    right: -20px;
+    display: flex;
+    gap: 80px;
+}
+.icons2 {
+    position: absolute;
+    top: 30px;
+    right: 90px;
+    display: flex;
+    gap: 80px;
+}
+
+/* Icon Sizes */
+.notification-icon, .inbox-icon {
+    width: 57px;
+    height: 57px;
+    position: relative;
+    animation: outline-glow 2s ease-in-out infinite alternate;
+}
+
+/* Main Content */
+main {
+    padding: 20px;
+    flex: 1;
+}
+
+/* Apply Section */
+.apply-section {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px solid;
+    border-radius: 12px;
+    width: 80%; /* Responsive width */
+    max-width: 600px;
+    margin: 20px auto;
+    height: auto; 
+}
+
+/* Apply Sections Colors and Borders */
+.apply-accreditation {
+    background-color: yellow;
+    border-color: blue;
+}
+
+.apply-expansion {
+    background-color: lightgreen;
+    border-color: yellow;
+}
+
+.apply-reaccreditation {
+    background-color: lightblue;
+    border-color: lightgreen;
+}
+
+/* Apply Section Headers */
+.apply-accreditation h2, .apply-expansion h2, .apply-reaccreditation h2 {
+    text-align: center;
+    margin: 0;
+}
+/* Dropdowns */
+.notification-dropdown,
+.message-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 0; /* Align with the icons */
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 200px; /* Adjust width as needed */
+    z-index: 1000; /* Ensure it appears on top */
+    padding: 10px;
+    box-sizing: border-box;
+}
+.message-dropdown {
+    right: 50px; /* Aligns to the inbox icon */
+}
+
+.notification-dropdown h4,
+.message-dropdown h4 {
+    margin: 0;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: black;
+    font-size: 1.2rem;
+}
+
+.notification-dropdown ul,
+.message-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: black;
+    font-size: 1rem;
+}
+
+.notification-dropdown li,
+.message-dropdown li {
+    padding: 10px;
+    border-bottom: 1px solid #434343;
+}
+
+.notification-dropdown li:last-child,
+.message-dropdown li:last-child {
+    border-bottom: none;
+}
+
+.notification-dropdown li:hover,
+.message-dropdown li:hover {
+    background-color: #e7e7e7;
+}
+.notification-dropdown h4, .message-dropdown h4 {
+    margin: 0;
+    padding-bottom: 10px; /* Space between heading and list */
+    color: black; /* Heading color */
+}
+.message-reply {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+}
+.message-reply textarea {
+    width: 88%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none; /* Prevent resizing */
+    height: 80px;
+}
+
+.message-reply button {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: #0288d1;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.message-reply button:hover {
+    background-color: #0277bd;
+}
+.notification-count, .message-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}
+/* Footer Styling */
+.footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f0f8ff;
+    width: 100%;
+    position: relative;
+    background: linear-gradient(to right, rgb(2, 145, 255), rgb(0, 95, 167), lightblue);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.home-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.footer {
+    margin-top: auto; /* Pushes the footer to the bottom of the page */
+}
+/* Logo Styling */
+.logo {
+    width: 15%;
+    max-width: 200px;
+    position: relative;
+    animation: outline-glow 2s ease-in-out infinite alternate;
+}
+
+/* Logo Animated Outline */
+@keyframes outline-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(2, 145, 255, 0.5), 
+                    0 0 10px rgba(2, 145, 255, 0.5), 
+                    0 0 15px rgba(2, 145, 255, 0.5), 
+                    0 0 20px rgba(2, 145, 255, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(2, 145, 255, 1), 
+                    0 0 20px rgba(2, 145, 255, 1), 
+                    0 0 30px rgba(2, 145, 255, 1), 
+                    0 0 40px rgba(2, 145, 255, 1);
+    }
+}
+
+/* Media Query for Small Screens */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column; /* Stack header elements vertically */
+        align-items: center;
+    }
+
+    .logo {
+        width: 50%; /* Adjust logo size for smaller screens */
+    }
+
+    .icons {
+        position: relative; /* Adjust positioning for small screens */
+        top: 0;
+        right: 0;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    .welcome-header {
+        font-size: 5vw; /* Increase font size for smaller screens */
+        left: 0; /* Center it completely on smaller screens */
+    }
+
+    .apply-section {
+        width: 90%; /* Make sections wider on small screens */
+    }
+
+}
