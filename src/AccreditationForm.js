@@ -9,6 +9,7 @@ const AccreditationForm = () => {
     const [deliveryLocations, setDeliveryLocations] = useState([{ id: Date.now() }]); // Initial delivery location
     const [seniorManagement, setSeniorManagement] = useState([{ id: Date.now() }]); // Initial senior management
     const [currentPage, setCurrentPage] = useState(0); // Track the current page
+    const [fileNames, setFileNames] = useState([]);
 
     const pages = [
         'SECTION A - TRAINING PROVIDER INFORMATION',
@@ -63,6 +64,13 @@ const AccreditationForm = () => {
             setCurrentPage(currentPage - 1);
         }
     };
+        // Handler for file input change
+        const handleFileChange = (e, setFiles) => {
+            const files = Array.from(e.target.files);
+            const fileNames = files.map(file => file.name);
+            setFiles(fileNames);
+        };
+    
 
     return (
         <div className="accreditation-form">
@@ -249,7 +257,27 @@ const AccreditationForm = () => {
                             </tbody>
                         </table>
                         <button type="button" onClick={addRow} className="add-button">Add Row</button>
-                        <p>Or <button type="button" className="upload-button">Upload Sheet</button></p>
+                        {/* Hidden file input */}
+                      <input
+                            type="file"
+                            id="documentUpload"
+                            name="documentUpload"
+                            style={{ display: 'none' }}
+                            multiple
+                            onChange={(e) => handleFileChange(e, setFileNames)}
+                        />
+                        <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload').click()}>Upload Sheet</button></p>
+                        {/* Display uploaded file names */}
+                        {fileNames.length > 0 && (
+                            <div className="file-names">
+                                <p>Uploaded files:</p>
+                                <ul>
+                                    {fileNames.map((fileName, index) => (
+                                        <li key={index}>{fileName}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     </section>
                 )}
 

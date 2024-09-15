@@ -73,7 +73,6 @@
     width: 57px;
     height: 57px;
     position: relative;
-    animation: outline-glow 2s ease-in-out infinite alternate;
 }
 
 /* Main Content */
@@ -119,8 +118,7 @@ main {
 .notification-dropdown,
 .message-dropdown {
     position: absolute;
-    top: 60px;
-    right: 0; /* Align with the icons */
+    top: 130px;
     background-color: rgb(255, 255, 255);
     border: 1px solid #ddd;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -131,6 +129,9 @@ main {
 }
 .message-dropdown {
     right: 50px; /* Aligns to the inbox icon */
+}
+.notification-dropdown{
+    right: 196px;
 }
 
 .notification-dropdown h4,

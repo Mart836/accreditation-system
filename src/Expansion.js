@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
+import backIcon from './back-icon.png'; 
+import nextIcon from './next-icon.png';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
 
 
 const AccreditationForm = () => {
     const [agreeAll, setAgreeAll] = useState(false);
     const [rows, setRows] = useState([{ id: Date.now() }]); // Initial row with unique ID
+    const [currentPage, setCurrentPage] = useState(0);
+    const [fileNames, setFileNames] = useState([]);
    
+    const pages = [
+        'SECTION A - TRAINING PROVIDER INFORMATION',
+        'CONTACT INFORMATION',
+        'SECTION B - INFORMATION ON SERVICES TO BE EXPANDED',
+        'DECLARATION',
+    ];
 
     const handleAgreeAllChange = (e) => {
         const checked = e.target.checked;
@@ -22,14 +32,37 @@ const AccreditationForm = () => {
     const removeRow = (id) => {
         setRows(rows.filter(row => row.id !== id));
     };
+    // Handlers for navigation
+    const nextPage = () => {
+        if (currentPage < pages.length - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+     // Handler for file input change
+     const handleFileChange = (e, setFiles) => {
+        const files = Array.from(e.target.files);
+        const fileNames = files.map(file => file.name);
+        setFiles(fileNames);
+    };
 
     return (
         <div className="Expansionaccreditation-form">
             <header className="form-header">
                 <div className="yellow-strip"></div>
+                {currentPage === 0 && (
+            <>
                 <h1>APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
+            </>
+        )}
             </header>
             <form>
+            {currentPage === 0 && (
                 <section className="section-a">
                     <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
                     <p>Please complete all areas of Section A</p>
@@ -59,7 +92,8 @@ const AccreditationForm = () => {
                     </label>
 
                 </section>
-                
+            )}
+                 {currentPage === 1 && (
                 <section className="contact-information">
                     <h2>CONTACT INFORMATION</h2>
                     <label>
@@ -83,7 +117,9 @@ const AccreditationForm = () => {
                         <input type="email" name="contactEmail" className="compact-input" required />
                     </label>
                 </section>
+            )}
                 
+                {currentPage === 2 && (
                 <section className="section-b">
                     <h2>SECTION B - INFORMATION ON SERVICES TO BE EXPANDED</h2>
                     <p>Please complete all areas of Section B</p>
@@ -133,10 +169,32 @@ const AccreditationForm = () => {
                         </tbody>
                     </table>
                     <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
-                    <p>Or <button type="button" className="upload-button">Upload Sheet</button></p>
+                     {/* Hidden file input */}
+                     <input
+                            type="file"
+                            id="documentUpload"
+                            name="documentUpload"
+                            style={{ display: 'none' }}
+                            multiple
+                            onChange={(e) => handleFileChange(e, setFileNames)}
+                        />
+                    <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload').click()}>Upload Sheet</button></p>
+                    {/* Display uploaded file names */}
+                    {fileNames.length > 0 && (
+                            <div className="file-names">
+                                <p>Uploaded files:</p>
+                                <ul>
+                                    {fileNames.map((fileName, index) => (
+                                        <li key={index}>{fileName}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
 
                 </section>
-                
+            )}
+          
+          {currentPage === 3 && (
                 <section className="declaration">
                    <h2>DECLARATION</h2>
                      <div className="declaration-item">
@@ -169,8 +227,21 @@ const AccreditationForm = () => {
                       </label>
                      </div>
                 </section>
-
-                <button type="submit" className="submit-button">Submit</button>
+          )}
+          {/* Navigation buttons */}
+          <div className="navigation-buttons">
+                {currentPage > 0 && (
+                    <button type="button" className="back-button" onClick={prevPage}>
+                        <img src={backIcon} alt="Back" />
+                    </button>
+                )}
+                {currentPage < pages.length - 1 && (
+                    <button type="button" className="next-button" onClick={nextPage}>
+                        <img src={nextIcon} alt="Next" />
+                    </button>
+                )}
+                {currentPage === pages.length - 1 && <button type="submit" className="submit-button">Submit</button>}
+                </div>
             </form>
         </div>
     );

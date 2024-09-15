@@ -47,6 +47,19 @@ h3 {
     font-size: 1.2em;
     color: #555;
 }
+.file-names {
+    margin-top: 10px;
+}
+
+.file-names ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.file-names li {
+    margin: 5px 0;
+}
+
 
 label {
     display: block;

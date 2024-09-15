@@ -1,10 +1,23 @@
 import React, { useState } from 'react';
+import backIcon from './back-icon.png'; 
+import nextIcon from './next-icon.png';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
+
 
 const AccreditationForm = () => {
     const [agreeAll, setAgreeAll] = useState(false);
     const [rows, setRows] = useState([{ id: Date.now() }]); // Initial row with unique ID
     const [deletedRows, setDeletedRows] = useState([{ id: Date.now() + 1 }]); // Initial deleted row with unique ID
+    const [currentPage, setCurrentPage] = useState(0);
+    const [fileNames, setFileNames] = useState([]);
+    const [deletedFileNames, setDeletedFileNames] = useState([]);
+
+    const pages = [
+        'SECTION A - TRAINING PROVIDER INFORMATION',
+        'CONTACT INFORMATION',
+        'SECTION B - INFORMATION FOR RE-ACCREDITATIO',
+        'DECLARATION',
+    ];
 
     const handleAgreeAllChange = (e) => {
         const checked = e.target.checked;
@@ -29,14 +42,38 @@ const AccreditationForm = () => {
     const removeDeletedRow = (id) => {
         setDeletedRows(deletedRows.filter(row => row.id !== id));
     };
+    // Handlers for navigation
+    const nextPage = () => {
+        if (currentPage < pages.length - 1) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const prevPage = () => {
+        if (currentPage > 0) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+      // Handler for file input change
+      const handleFileChange = (e, setFiles) => {
+        const files = Array.from(e.target.files);
+        const fileNames = files.map(file => file.name);
+        setFiles(fileNames);
+    };
+
 
     return (
         <div className="reaccreditation-form">
             <header className="form-header">
                 <div className="yellow-strip"></div>
+                {currentPage === 0 && (
+            <>
                 <h1>Re-Accreditation Application Form</h1>
+            </>
+        )}
             </header>
             <form>
+            {currentPage === 0 && (
                 <section className="section-a">
                     <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
                     <p>Please complete all areas of Section A</p>
@@ -116,9 +153,15 @@ const AccreditationForm = () => {
                         <div className="declaration-item">
                         <p>If yes to any, please attach relevant information or documentation.</p>
                         </div>
+                          {/* Add file input for document upload */}
+                        <div className="upload-section">
+                        <label htmlFor="documentUpload" className="upload-label">Attach Documentation:</label>
+                        <input type="file" id="documentUpload" name="documentUpload" multiple />
+                        </div>
                     </fieldset>
                 </section>
-                
+            )}
+                {currentPage === 1 && (
                 <section className="contact-information">
                     <h2>CONTACT INFORMATION</h2>
                     <label>
@@ -142,7 +185,9 @@ const AccreditationForm = () => {
                         <input type="email" name="contactEmail" className="compact-input" required />
                     </label>
                 </section>
+                )}
                 
+                {currentPage === 2 && (
                 <section className="section-b">
                     <h2>SECTION B - INFORMATION FOR RE-ACCREDITATION</h2>
                     <p>Please complete all areas of Section B</p>
@@ -193,8 +238,37 @@ const AccreditationForm = () => {
                         </tbody>
                     </table>
                     <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
-                    <p>Or <button type="button" className="upload-button">Upload Sheet</button></p>
-
+                      {/* Hidden file input */}
+                      <input
+                            type="file"
+                            id="documentUpload"
+                            name="documentUpload"
+                            style={{ display: 'none' }}
+                            multiple
+                            onChange={(e) => handleFileChange(e, setFileNames)}
+                        />
+                        <input
+                            type="file"
+                            id="documentUpload2"
+                            name="documentUpload2"
+                            style={{ display: 'none' }}
+                            multiple
+                            onChange={(e) => handleFileChange(e, setDeletedFileNames)}
+                        />
+                        
+                        <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload').click()}>Upload Current Qualifications Sheet</button></p>
+                        
+                        {/* Display uploaded file names */}
+                        {fileNames.length > 0 && (
+                            <div className="file-names">
+                                <p>Uploaded files:</p>
+                                <ul>
+                                    {fileNames.map((fileName, index) => (
+                                        <li key={index}>{fileName}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                     <h3>List qualifications no longer offered / Qualifications that must be deleted from the Register:</h3>
                     <table>
                         <thead>
@@ -241,9 +315,29 @@ const AccreditationForm = () => {
                         </tbody>
                     </table>
                     <button type="button" onClick={addDeletedRow} className="add-row-button">Add Row</button>
-                    <p>Or <button type="button" className="upload-button">Upload Sheet</button></p>
+                    <p>
+                            Or
+                            <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload2').click()}>
+                                Upload Deleted Qualifications Sheet
+                            </button>
+                        </p>
+                        
+                        {/* Display uploaded file names */}
+                        {deletedFileNames.length > 0 && (
+                            <div className="file-names">
+                                <p>Uploaded files for Deleted Qualifications:</p>
+                                <ul>
+                                    {deletedFileNames.map((fileName, index) => (
+                                        <li key={index}>{fileName}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
                 </section>
+                )}
                 
+                {currentPage === 3 && (
                 <section className="declaration">
                    <h2>DECLARATION</h2>
                      <div className="declaration-item">
@@ -276,8 +370,21 @@ const AccreditationForm = () => {
                       </label>
                      </div>
                 </section>
-
-                <button type="submit" className="submit-button">Submit</button>
+                )}
+                {/* Navigation buttons */}
+          <div className="navigation-buttons">
+                {currentPage > 0 && (
+                    <button type="button" className="back-button" onClick={prevPage}>
+                        <img src={backIcon} alt="Back" />
+                    </button>
+                )}
+                {currentPage < pages.length - 1 && (
+                    <button type="button" className="next-button" onClick={nextPage}>
+                        <img src={nextIcon} alt="Next" />
+                    </button>
+                )}
+                {currentPage === pages.length - 1 && <button type="submit" className="submit-button">Submit</button>}
+            </div>
             </form>
         </div>
     );
