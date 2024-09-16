@@ -39,6 +39,7 @@ const AccreditationForm = () => {
     const [fileNames, setFileNames] = useState([]);
     const [deletedFileNames, setDeletedFileNames] = useState([]);
     
+    
 
     const pages = [
         'SECTION A - TRAINING PROVIDER INFORMATION',
@@ -96,10 +97,10 @@ const AccreditationForm = () => {
         }
     };
 
-    const handleFileChange = (e, setFiles) => {
+    const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         const fileNames = files.map(file => file.name);
-        setFiles(fileNames);
+        setFileNames(fileNames); // Use setFileNames to update the fileNames state
     };
     const handleDeclarationChange = (e) => {
         const { name, checked } = e.target;
@@ -329,10 +330,28 @@ const handleAgreeAllChange = (e) => {
                                 </div>
                             </label>
                             {/* Add file input for document upload */}
-                            <div className="upload-section">
-                                <label htmlFor="documentUpload" className="upload-label">Attach Documentation:</label>
-                                <input type="file" id="documentUpload" name="documentUpload" multiple />
+                    <div className="upload-section">
+                        <label htmlFor="documentUpload" className="upload-label">Attach Documentation:</label>
+                        <input
+                            type="file"
+                            id="documentUpload"
+                            name="documentUpload"
+                            multiple
+                            onChange={handleFileChange} // Capture file changes
+                        />
+                    </div>
+
+                    {/* Display uploaded file names */}
+                    {fileNames.length > 0 && (
+                            <div className="file-names">
+                                <p>Uploaded files:</p>
+                                <ul>
+                                    {fileNames.map((fileName, index) => (
+                                        <li key={index}>{fileName}</li>
+                                    ))}
+                                </ul>
                             </div>
+                        )}
                         </fieldset>
                     </section>
                 )}
