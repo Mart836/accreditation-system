@@ -11,17 +11,19 @@
   }
   
   .logo2 {
-    width: 430px; /* Set the width of the logo */
+    display: flex;
+    flex-direction: column;
+    width: 400px; /* Set the width of the logo */
     height: auto; /* Maintain aspect ratio */
     position: relative; /* Use relative positioning if you want to position it based on its normal position */
     top: -21px; /* Move the logo 20px down from its normal position */
-    left: -30px; /* Move the logo 50px to the right from its normal position */
+    left: -45px; /* Move the logo 50px to the right from its normal position */
     /* You can also use absolute positioning if you want more control over its placement */
     /* position: absolute; */
     /* top: 20px; */
     /* left: 50px; */
 }
-  
+
   .slogan {
     font-size: 34px;
     margin-top: 20px;

@@ -149,6 +149,9 @@ th, td {
     background: none; 
     display: block;
 }
+.decler{
+    text-align: center;
+}
 
 /* Add media queries for better responsiveness on smaller screens */
 @media (max-width: 768px) {
