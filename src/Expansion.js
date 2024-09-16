@@ -3,13 +3,32 @@ import backIcon from './back-icon.png';
 import nextIcon from './next-icon.png';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
 
-
 const AccreditationForm = () => {
     const [agreeAll, setAgreeAll] = useState(false);
-    const [rows, setRows] = useState([{ id: Date.now() }]); // Initial row with unique ID
+    const [rows, setRows] = useState([{ id: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', attendance: [], franchisePartners: '', sites: '' }]);
     const [currentPage, setCurrentPage] = useState(0);
     const [fileNames, setFileNames] = useState([]);
-   
+
+    // State for form fields
+    const [formData, setFormData] = useState({
+        institutionName: '',
+        accreditationNumber: '',
+        streetAddress: '',
+        mailingAddress: '',
+        telephoneNumber: '',
+        emailAddress: '',
+        contactPerson: '',
+        contactTelephone: '',
+        contactPosition: '',
+        postalAddress: '',
+        contactEmail: '',
+        qualifications: rows,
+        declaration: false,
+        legislation: false,
+        notifyNQA: false,
+        access: false
+    });
+
     const pages = [
         'SECTION A - TRAINING PROVIDER INFORMATION',
         'CONTACT INFORMATION',
@@ -20,18 +39,61 @@ const AccreditationForm = () => {
     const handleAgreeAllChange = (e) => {
         const checked = e.target.checked;
         setAgreeAll(checked);
-        document.querySelectorAll('.declaration input[type="checkbox"]').forEach((checkbox) => {
-            checkbox.checked = checked;
-        });
+        setFormData((prevData) => ({
+            ...prevData,
+            declaration: checked,
+            legislation: checked,
+            notifyNQA: checked,
+            access: checked
+        }));
     };
 
     const addRow = () => {
-        setRows([...rows, { id: Date.now() }]);
+        setRows([...rows, { id: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', attendance: [], franchisePartners: '', sites: '' }]);
+        setFormData((prevData) => ({
+            ...prevData,
+            qualifications: [...rows, { id: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', attendance: [], franchisePartners: '', sites: '' }]
+        }));
     };
 
     const removeRow = (id) => {
-        setRows(rows.filter(row => row.id !== id));
+        const updatedRows = rows.filter(row => row.id !== id);
+        setRows(updatedRows);
+        setFormData((prevData) => ({
+            ...prevData,
+            qualifications: updatedRows
+        }));
     };
+
+    const handleInputChange = (e, rowId) => {
+        const { name, value } = e.target;
+        const updatedRows = rows.map(row => 
+            row.id === rowId ? { ...row, [name]: value } : row
+        );
+        setRows(updatedRows);
+        setFormData((prevData) => ({
+            ...prevData,
+            qualifications: updatedRows
+        }));
+    };
+
+    const handleCheckboxChange = (e, rowId) => {
+        const { value, checked } = e.target;
+        const updatedRows = rows.map(row => 
+            row.id === rowId ? { 
+                ...row, 
+                attendance: checked 
+                    ? [...row.attendance, value] 
+                    : row.attendance.filter(att => att !== value) 
+            } : row
+        );
+        setRows(updatedRows);
+        setFormData((prevData) => ({
+            ...prevData,
+            qualifications: updatedRows
+        }));
+    };
+
     // Handlers for navigation
     const nextPage = () => {
         if (currentPage < pages.length - 1) {
@@ -44,11 +106,12 @@ const AccreditationForm = () => {
             setCurrentPage(currentPage - 1);
         }
     };
-     // Handler for file input change
-     const handleFileChange = (e, setFiles) => {
+
+    // Handler for file input change
+    const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         const fileNames = files.map(file => file.name);
-        setFiles(fileNames);
+        setFileNames(fileNames);
     };
 
     return (
@@ -56,131 +119,266 @@ const AccreditationForm = () => {
             <header className="form-header">
                 <div className="yellow-strip"></div>
                 {currentPage === 0 && (
-            <>
-                <h1>APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
-            </>
-        )}
+                    <h1>APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
+                )}
             </header>
             <form>
-            {currentPage === 0 && (
-                <section className="section-a">
-                    <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
-                    <p>Please complete all areas of Section A</p>
-                    <label>
-                        Operating name of the institution:
-                        <input type="text" name="institutionName" className="compact-input" required />
-                    </label>
-                    <label>
-                        Accreditation number:
-                        <input type="text" name="accreditationNumber" className="compact-input" required />
-                    </label>
-                    <label>
-                        Street Address:
-                        <input type="text" name="streetAddress" className="compact-input" required />
-                    </label>
-                    <label>
-                        Mailing Address:
-                        <input type="text" name="mailingAddress" className="compact-input" required />
-                    </label>
-                    <label>
-                        Telephone number:
-                        <input type="tel" name="telephoneNumber" className="compact-input" required />
-                    </label>
-                    <label>
-                        E-mail Address:
-                        <input type="email" name="emailAddress" className="compact-input" required />
-                    </label>
-
-                </section>
-            )}
-                 {currentPage === 1 && (
-                <section className="contact-information">
-                    <h2>CONTACT INFORMATION</h2>
-                    <label>
-                        Name and title of person completing application (Contact Person):
-                        <input type="text" name="contactPerson" className="compact-input" required />
-                    </label>
-                    <label>
-                        Telephone no.:
-                        <input type="tel" name="contactTelephone" className="compact-input" required />
-                    </label>
-                    <label>
-                        Position:
-                        <input type="text" name="contactPosition" className="compact-input" required />
-                    </label>
-                    <label>
-                        Postal Address:
-                        <input type="text" name="postalAddress" className="compact-input" required />
-                    </label>
-                    <label>
-                        Email Address:
-                        <input type="email" name="contactEmail" className="compact-input" required />
-                    </label>
-                </section>
-            )}
-                
+                {currentPage === 0 && (
+                    <section className="section-a">
+                        <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
+                        <p>Please complete all areas of Section A</p>
+                        <label>
+                            Operating name of the institution:
+                            <input
+                                type="text"
+                                name="institutionName"
+                                value={formData.institutionName}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Accreditation number:
+                            <input
+                                type="text"
+                                name="accreditationNumber"
+                                value={formData.accreditationNumber}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Street Address:
+                            <input
+                                type="text"
+                                name="streetAddress"
+                                value={formData.streetAddress}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Mailing Address:
+                            <input
+                                type="text"
+                                name="mailingAddress"
+                                value={formData.mailingAddress}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Telephone number:
+                            <input
+                                type="tel"
+                                name="telephoneNumber"
+                                value={formData.telephoneNumber}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            E-mail Address:
+                            <input
+                                type="email"
+                                name="emailAddress"
+                                value={formData.emailAddress}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                    </section>
+                )}
+                {currentPage === 1 && (
+                    <section className="contact-information">
+                        <h2>CONTACT INFORMATION</h2>
+                        <label>
+                            Name and title of person completing application (Contact Person):
+                            <input
+                                type="text"
+                                name="contactPerson"
+                                value={formData.contactPerson}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Telephone no.:
+                            <input
+                                type="tel"
+                                name="contactTelephone"
+                                value={formData.contactTelephone}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Position:
+                            <input
+                                type="text"
+                                name="contactPosition"
+                                value={formData.contactPosition}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Postal Address:
+                            <input
+                                type="text"
+                                name="postalAddress"
+                                value={formData.postalAddress}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                        <label>
+                            Email Address:
+                            <input
+                                type="email"
+                                name="contactEmail"
+                                value={formData.contactEmail}
+                                onChange={handleInputChange}
+                                className="compact-input"
+                                required
+                            />
+                        </label>
+                    </section>
+                )}
                 {currentPage === 2 && (
-                <section className="section-b">
-                    <h2>SECTION B - INFORMATION ON SERVICES TO BE EXPANDED</h2>
-                    <p>Please complete all areas of Section B</p>
-                    <p>List all qualifications currently offered by the institution for which expansion is sought: (Additional sheets may be attached if necessary)</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>NO</th>
-                                <th>QUALIFICATION TITLE</th>
-                                <th>NQF LEVEL</th>
-                                <th>Full time</th>
-                                <th>Part-time</th>
-                                <th>Distance</th>
-                                <th>FRANCHISE PARTNERS (IF APPLICABLE)</th>
-                                <th>SITE(S)</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {rows.map((row) => (
-                                <tr key={row.id}>
-                                    <td><input type="text" name="qualificationNo" className="compact-input" /></td>
-                                    <td><input type="text" name="qualificationTitle" className="compact-input" /></td>
-                                    <td><input type="text" name="nqfLevel" className="compact-input" /></td>
-                                    <td>
-                                        <label>
-                                            <input type="checkbox" name={`attendance_${row.id}`} value="full-time" /> 
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input type="checkbox" name={`attendance_${row.id}`} value="part-time" /> 
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <label>
-                                            <input type="checkbox" name={`attendance_${row.id}`} value="distance" /> 
-                                        </label>
-                                    </td>
-                                    <td><input type="text" name="franchisePartners" className="compact-input" /></td>
-                                    <td><input type="text" name="sites" className="compact-input" /></td>
-                                    <td>
-                                        <button type="button" onClick={() => removeRow(row.id)} className="remove-row-button">Delete</button>
-                                    </td>
+                    <section className="section-b">
+                        <h2>SECTION B - INFORMATION ON SERVICES TO BE EXPANDED</h2>
+                        <p>Please complete all areas of Section B</p>
+                        <p>List all qualifications currently offered by the institution for which expansion is sought: (Additional sheets may be attached if necessary)</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>NO</th>
+                                    <th>QUALIFICATION TITLE</th>
+                                    <th>NQF LEVEL</th>
+                                    <th>Full time</th>
+                                    <th>Part-time</th>
+                                    <th>Distance</th>
+                                    <th>FRANCHISE PARTNERS (IF APPLICABLE)</th>
+                                    <th>SITE(S)</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
-                     {/* Hidden file input */}
-                     <input
+                            </thead>
+                            <tbody>
+                                {rows.map((row) => (
+                                    <tr key={row.id}>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="qualificationNo"
+                                                value={row.qualificationNo}
+                                                onChange={(e) => handleInputChange(e, row.id)}
+                                                className="compact-input"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="qualificationTitle"
+                                                value={row.qualificationTitle}
+                                                onChange={(e) => handleInputChange(e, row.id)}
+                                                className="compact-input"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="nqfLevel"
+                                                value={row.nqfLevel}
+                                                onChange={(e) => handleInputChange(e, row.id)}
+                                                className="compact-input"
+                                            />
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="attendance"
+                                                    value="full-time"
+                                                    checked={row.attendance.includes('full-time')}
+                                                    onChange={(e) => handleCheckboxChange(e, row.id)}
+                                                />
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="attendance"
+                                                    value="part-time"
+                                                    checked={row.attendance.includes('part-time')}
+                                                    onChange={(e) => handleCheckboxChange(e, row.id)}
+                                                />
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    name="attendance"
+                                                    value="distance"
+                                                    checked={row.attendance.includes('distance')}
+                                                    onChange={(e) => handleCheckboxChange(e, row.id)}
+                                                />
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="franchisePartners"
+                                                value={row.franchisePartners}
+                                                onChange={(e) => handleInputChange(e, row.id)}
+                                                className="compact-input"
+                                            />
+                                        </td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                name="sites"
+                                                value={row.sites}
+                                                onChange={(e) => handleInputChange(e, row.id)}
+                                                className="compact-input"
+                                            />
+                                        </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                onClick={() => removeRow(row.id)}
+                                                className="remove-row-button"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
+                        <input
                             type="file"
                             id="documentUpload"
                             name="documentUpload"
                             style={{ display: 'none' }}
                             multiple
-                            onChange={(e) => handleFileChange(e, setFileNames)}
+                            onChange={handleFileChange}
                         />
-                    <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload').click()}>Upload Sheet</button></p>
-                    {/* Display uploaded file names */}
-                    {fileNames.length > 0 && (
+                        <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload').click()}>Upload Sheet</button></p>
+                        {fileNames.length > 0 && (
                             <div className="file-names">
                                 <p>Uploaded files:</p>
                                 <ul>
@@ -190,57 +388,79 @@ const AccreditationForm = () => {
                                 </ul>
                             </div>
                         )}
-
-                </section>
-            )}
-          
-          {currentPage === 3 && (
-                <section className="declaration">
-                   <h2>DECLARATION</h2>
-                     <div className="declaration-item">
-                        <label>
-                         <input type="checkbox" name="agreeAll" checked={agreeAll} onChange={handleAgreeAllChange} /> Agree to all
-                        </label>
-                     </div>
-                     <div className="declaration-item">
-                        <label>
-                        <input type="checkbox" name="declaration" />
-                         I declare that all information in the form and pack is true and correct.
-                       </label>
-                     </div>
-                     <div className="declaration-item">
-                       <label>
-                       <input type="checkbox" name="legislation" />
-                       I agree to abide by any applicable legislation of relevance to our operations.
-                       </label>
-                     </div>
-                     <div className="declaration-item">
-                       <label>
-                       <input type="checkbox" name="notifyNQA" />
-                       I agree to notify the NQA of any significant changes to our position as an institution.
-                       </label>
-                     </div>
-                       <div className="declaration-item">
-                       <label>
-                       <input type="checkbox" name="access" />
-                       I agree to give free and full access to any facilities and documents relevant to this application and its ongoing effect.
-                      </label>
-                     </div>
-                </section>
-          )}
-          {/* Navigation buttons */}
-          <div className="navigation-buttons">
-                {currentPage > 0 && (
-                    <button type="button" className="back-button" onClick={prevPage}>
-                        <img src={backIcon} alt="Back" />
-                    </button>
+                    </section>
                 )}
-                {currentPage < pages.length - 1 && (
-                    <button type="button" className="next-button" onClick={nextPage}>
-                        <img src={nextIcon} alt="Next" />
-                    </button>
+                {currentPage === 3 && (
+                    <section className="declaration">
+                        <h2>DECLARATION</h2>
+                        <div className="declaration-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="agreeAll"
+                                    checked={agreeAll}
+                                    onChange={handleAgreeAllChange}
+                                /> Agree to all
+                            </label>
+                        </div>
+                        <div className="declaration-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="declaration"
+                                    checked={formData.declaration}
+                                    onChange={(e) => setFormData({ ...formData, declaration: e.target.checked })}
+                                />
+                                I declare that all information in the form and pack is true and correct.
+                            </label>
+                        </div>
+                        <div className="declaration-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="legislation"
+                                    checked={formData.legislation}
+                                    onChange={(e) => setFormData({ ...formData, legislation: e.target.checked })}
+                                />
+                                I agree to abide by any applicable legislation of relevance to our operations.
+                            </label>
+                        </div>
+                        <div className="declaration-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="notifyNQA"
+                                    checked={formData.notifyNQA}
+                                    onChange={(e) => setFormData({ ...formData, notifyNQA: e.target.checked })}
+                                />
+                                I agree to notify the NQA of any significant changes to our position as an institution.
+                            </label>
+                        </div>
+                        <div className="declaration-item">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="access"
+                                    checked={formData.access}
+                                    onChange={(e) => setFormData({ ...formData, access: e.target.checked })}
+                                />
+                                I agree to give free and full access to any facilities and documents relevant to this application and its ongoing effect.
+                            </label>
+                        </div>
+                    </section>
                 )}
-                {currentPage === pages.length - 1 && <button type="submit" className="submit-button">Submit</button>}
+                <div className="navigation-buttons">
+                    {currentPage > 0 && (
+                        <button type="button" className="back-button" onClick={prevPage}>
+                            <img src={backIcon} alt="Back" />
+                        </button>
+                    )}
+                    {currentPage < pages.length - 1 && (
+                        <button type="button" className="next-button" onClick={nextPage}>
+                            <img src={nextIcon} alt="Next" />
+                        </button>
+                    )}
+                    {currentPage === pages.length - 1 && <button type="submit" className="submit-button">Submit</button>}
                 </div>
             </form>
         </div>
