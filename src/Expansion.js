@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
+import { db } from './firebase'; // Import Firestore instance
+import { collection, addDoc } from 'firebase/firestore';
 
 const AccreditationForm = () => {
     const [agreeAll, setAgreeAll] = useState(false);
@@ -64,6 +66,13 @@ const AccreditationForm = () => {
             qualifications: updatedRows
         }));
     };
+    const handleInputChange2 = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value
+        }));
+    };
 
     const handleInputChange = (e, rowId) => {
         const { name, value } = e.target;
@@ -113,6 +122,20 @@ const AccreditationForm = () => {
         const fileNames = files.map(file => file.name);
         setFileNames(fileNames);
     };
+    // Handle form submission
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Save form data to Firestore
+            await addDoc(collection(db, 'accreditation_expansion'), formData);
+            alert('Form submitted successfully!');
+            // Optionally, reset form or redirect user
+        } catch (error) {
+            console.error('Error adding document: ', error);
+            alert('Error submitting form. Please try again.');
+        }
+    };
 
     return (
         <div className="Expansionaccreditation-form">
@@ -122,7 +145,7 @@ const AccreditationForm = () => {
                     <h1>APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
                 )}
             </header>
-            <form>
+            <form onSubmit={handleSubmit}>
                 {currentPage === 0 && (
                     <section className="section-a">
                         <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
@@ -133,7 +156,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="institutionName"
                                 value={formData.institutionName}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -144,7 +167,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="accreditationNumber"
                                 value={formData.accreditationNumber}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -155,7 +178,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="streetAddress"
                                 value={formData.streetAddress}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -166,7 +189,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="mailingAddress"
                                 value={formData.mailingAddress}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -177,7 +200,7 @@ const AccreditationForm = () => {
                                 type="tel"
                                 name="telephoneNumber"
                                 value={formData.telephoneNumber}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -188,7 +211,7 @@ const AccreditationForm = () => {
                                 type="email"
                                 name="emailAddress"
                                 value={formData.emailAddress}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -204,7 +227,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="contactPerson"
                                 value={formData.contactPerson}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -215,7 +238,7 @@ const AccreditationForm = () => {
                                 type="tel"
                                 name="contactTelephone"
                                 value={formData.contactTelephone}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -226,7 +249,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="contactPosition"
                                 value={formData.contactPosition}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -237,7 +260,7 @@ const AccreditationForm = () => {
                                 type="text"
                                 name="postalAddress"
                                 value={formData.postalAddress}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />
@@ -248,7 +271,7 @@ const AccreditationForm = () => {
                                 type="email"
                                 name="contactEmail"
                                 value={formData.contactEmail}
-                                onChange={handleInputChange}
+                                onChange={handleInputChange2}
                                 className="compact-input"
                                 required
                             />

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
+import { db } from './firebase'; // Import Firestore instance
+import { collection, addDoc } from 'firebase/firestore';
 
 
 const AccreditationForm = () => {
@@ -51,23 +53,28 @@ const AccreditationForm = () => {
     const handleRowChange = (e, index) => {
         const { name, value } = e.target;
         const updatedRows = [...rows];
-        updatedRows[index][name] = value;
+        updatedRows[index] = { ...updatedRows[index], [name]: value };
         setRows(updatedRows);
     };
+    
     // Handle individual checkbox changes
     
     const handleDeletedRowChange = (e, index) => {
         const { name, value } = e.target;
         const updatedRows = [...deletedRows];
-        updatedRows[index][name] = value;
+        updatedRows[index] = { ...updatedRows[index], [name]: value };
         setDeletedRows(updatedRows);
     };
     
+    
+    
     const handleDeletedCheckboxChange = (e, index, field) => {
+        const { checked } = e.target;
         const updatedRows = [...deletedRows];
-        updatedRows[index][field] = e.target.checked;
+        updatedRows[index] = { ...updatedRows[index], [field]: checked }; // Update the specific row
         setDeletedRows(updatedRows);
     };
+    
 
     const addRow = () => {
         setRows([...rows, { id: Date.now(),qualificationNo: '', qualificationTitle: '', nqfLevel: '', fullTime: false, partTime: false, distance: false, franchisePartners: '', sites: '' }]);
@@ -101,6 +108,11 @@ const AccreditationForm = () => {
         const files = Array.from(e.target.files);
         const fileNames = files.map(file => file.name);
         setFileNames(fileNames); // Use setFileNames to update the fileNames state
+    };
+    const handleFileChangeForDeleted = (e) => {
+        const files = Array.from(e.target.files);
+        const fileNames = files.map(file => file.name);
+        setDeletedFileNames(fileNames);
     };
     const handleDeclarationChange = (e) => {
         const { name, checked } = e.target;
@@ -140,16 +152,27 @@ const handleAgreeAllChange = (e) => {
             [name]: value,
         }));
     };
-
-    // Handler for checkbox change
-    const handleCheckboxChange = (e) => {
-        const { name, checked } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: checked,
-        }));
+    const handleCheckboxChange = (e, index, field) => {
+        const { checked } = e.target;
+        const updatedRows = [...rows];
+        updatedRows[index] = { ...updatedRows[index], [field]: checked }; // Update the specific row
+        setRows(updatedRows);
     };
+     // Handle form submission
+     const handleSubmit = async (e) => {
+        e.preventDefault();
 
+        try {
+            // Save form data to Firestore
+            await addDoc(collection(db, 'Re-accreditation'), formData);
+            alert('Form submitted successfully!');
+            // Optionally, reset form or redirect user
+        } catch (error) {
+            console.error('Error adding document: ', error);
+            alert('Error submitting form. Please try again.');
+        }
+    };
+    
 
     return (
         <div className="reaccreditation-form">
@@ -161,7 +184,7 @@ const handleAgreeAllChange = (e) => {
             </>
         )}
             </header>
-            <form>
+            <form onSubmit={handleSubmit}>
             {currentPage === 0 && (
                     <section className="section-a">
                         <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
@@ -559,21 +582,21 @@ const handleAgreeAllChange = (e) => {
                         <td><input
                             type="text"
                             name="qualificationNoDeleted"
-                            className="compact-input"
+                            className="compact-input2"
                             value={row.qualificationNo}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
                             name="qualificationTitleDeleted"
-                            className="compact-input"
+                            className="compact-input2"
                             value={row.qualificationTitle}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
                             name="nqfLevelDeleted"
-                            className="compact-input"
+                            className="compact-input2"
                             value={row.nqfLevel}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
@@ -610,14 +633,14 @@ const handleAgreeAllChange = (e) => {
                         <td><input
                             type="text"
                             name="franchisePartnersDeleted"
-                            className="compact-input"
+                            className="compact-input2"
                             value={row.franchisePartners}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
                             name="sitesDeleted"
-                            className="compact-input"
+                            className="compact-input2"
                             value={row.sites}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
@@ -637,7 +660,7 @@ const handleAgreeAllChange = (e) => {
             name="documentUpload2"
             style={{ display: 'none' }}
             multiple
-            onChange={(e) => handleFileChange(e, setDeletedFileNames)}
+            onChange={(e) => handleFileChangeForDeleted(e, setDeletedFileNames)}
         />
         <p>Or <button type="button" className="upload-button" onClick={() => document.getElementById('documentUpload2').click()}>Upload Deleted Qualifications Sheet</button></p>
 

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
 import './AccreditationForm.css'; // Create this CSS file for styling
+import { db } from './firebase'; // Import Firestore instance
+import { collection, addDoc } from 'firebase/firestore';
 
 const AccreditationForm = () => {
     const [formData, setFormData] = useState({
@@ -163,7 +165,20 @@ const AccreditationForm = () => {
                 [name]: checked,
             }));
         };
-    
+     // Handle form submission
+     const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            // Save form data to Firestore
+            await addDoc(collection(db, 'Accreditation'), formData);
+            alert('Form submitted successfully!');
+            // Optionally, reset form or redirect user
+        } catch (error) {
+            console.error('Error adding document: ', error);
+            alert('Error submitting form. Please try again.');
+        }
+    };
 
     return (
         <div className="accreditation-form">
@@ -177,7 +192,7 @@ const AccreditationForm = () => {
         )}
             </header>
 
-            <form>
+            <form onSubmit={handleSubmit}>
                 {/* Render the current page based on currentPage state */}
                 {currentPage === 0 && (
                     <section className="section-a">

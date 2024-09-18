@@ -145,7 +145,7 @@ th, td {
 }
 
 /* For compact inputs */
-.compact-input {
+.compact-input,.compact-input2 {
     padding: 8px;
     font-size: 0.9em;
 }
