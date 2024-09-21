@@ -81,7 +81,7 @@ const AccreditationForm = () => {
     };
 
     const addDeletedRow = () => {
-        setDeletedRows([...deletedRows, { id: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', fullTime: false, partTime: false, distance: false, franchisePartners: '', sites: ''  }]);
+        setDeletedRows([...deletedRows, { id2: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', fullTime: false, partTime: false, distance: false, franchisePartners: '', sites: ''  }]);
     };
 
     const removeRow = (id) => {
@@ -157,6 +157,13 @@ const handleAgreeAllChange = (e) => {
         const updatedRows = [...rows];
         updatedRows[index] = { ...updatedRows[index], [field]: checked }; // Update the specific row
         setRows(updatedRows);
+    };
+    const handleCheckboxChange2 = (event) => {
+        const { name, checked } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: checked,
+        }));
     };
      // Handle form submission
      const handleSubmit = async (e) => {
@@ -314,7 +321,7 @@ const handleAgreeAllChange = (e) => {
                                         type="checkbox" 
                                         name="audited" 
                                         checked={formData.audited} 
-                                        onChange={handleCheckboxChange} 
+                                        onChange={handleCheckboxChange2} 
                                     />
                                     Been audited or investigated by the NQA or other body
                                 </div>
@@ -325,7 +332,7 @@ const handleAgreeAllChange = (e) => {
                                         type="checkbox" 
                                         name="offence" 
                                         checked={formData.offence} 
-                                        onChange={handleCheckboxChange} 
+                                        onChange={handleCheckboxChange2} 
                                     />
                                     Committed an offence under section 13 of the Act
                                 </div>
@@ -336,7 +343,7 @@ const handleAgreeAllChange = (e) => {
                                         type="checkbox" 
                                         name="changes" 
                                         checked={formData.changes} 
-                                        onChange={handleCheckboxChange} 
+                                        onChange={handleCheckboxChange2} 
                                     />
                                     Made any changes to existing qualifications
                                 </div>
@@ -347,7 +354,7 @@ const handleAgreeAllChange = (e) => {
                                         type="checkbox" 
                                         name="selfEvaluation" 
                                         checked={formData.selfEvaluation} 
-                                        onChange={handleCheckboxChange} 
+                                        onChange={handleCheckboxChange2} 
                                     />
                                     Undertaken any formal self-evaluation or internal audit
                                 </div>
@@ -581,22 +588,22 @@ const handleAgreeAllChange = (e) => {
                     <tr key={row.id}>
                         <td><input
                             type="text"
-                            name="qualificationNoDeleted"
-                            className="compact-input2"
+                            name="qualificationNo"
+                            className="compact-input"
                             value={row.qualificationNo}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
-                            name="qualificationTitleDeleted"
-                            className="compact-input2"
+                            name="qualificationTitle"
+                            className="compact-input"
                             value={row.qualificationTitle}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
-                            name="nqfLevelDeleted"
-                            className="compact-input2"
+                            name="nqfLevel"
+                            className="compact-input"
                             value={row.nqfLevel}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
@@ -604,7 +611,7 @@ const handleAgreeAllChange = (e) => {
                             <label>
                                 <input
                                     type="checkbox"
-                                    name="fullTimeDeleted"
+                                    name="fullTime"
                                     checked={row.fullTime}
                                     onChange={(e) => handleDeletedCheckboxChange(e, index, 'fullTime')}
                                 />
@@ -614,7 +621,7 @@ const handleAgreeAllChange = (e) => {
                             <label>
                                 <input
                                     type="checkbox"
-                                    name="partTimeDeleted"
+                                    name="partTime"
                                     checked={row.partTime}
                                     onChange={(e) => handleDeletedCheckboxChange(e, index, 'partTime')}
                                 />
@@ -624,7 +631,7 @@ const handleAgreeAllChange = (e) => {
                             <label>
                                 <input
                                     type="checkbox"
-                                    name="distanceDeleted"
+                                    name="distance"
                                     checked={row.distance}
                                     onChange={(e) => handleDeletedCheckboxChange(e, index, 'distance')}
                                 />
@@ -632,15 +639,15 @@ const handleAgreeAllChange = (e) => {
                         </td>
                         <td><input
                             type="text"
-                            name="franchisePartnersDeleted"
-                            className="compact-input2"
+                            name="franchisePartners"
+                            className="compact-input"
                             value={row.franchisePartners}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
                         <td><input
                             type="text"
-                            name="sitesDeleted"
-                            className="compact-input2"
+                            name="sites"
+                            className="compact-input"
                             value={row.sites}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
