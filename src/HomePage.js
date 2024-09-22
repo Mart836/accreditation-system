@@ -81,11 +81,10 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="home-page">
+        <div className="container-fluid home-page bg-light">
             {/* Logo and Header Section */}
             <header className="header">
                 <img src={logo} alt="Logo" className="logo" />
-                <div className="yellow-stripe"></div>
                 <div className="welcome-header">
                     <h1>Welcome to Our Site</h1>
                     <div className="icons2" ref={notificationRef}>
@@ -144,21 +143,38 @@ const HomePage = () => {
             
             {/* Main Content Section */}
             <main>
-                <div className="apply-section apply-accreditation">
-                    <Link to="/accreditation-form">
-                        <h2>Apply for Accreditation</h2>
+            <div className="container my-5 d-flex flex-column align-items-center">
+    <div className="card apply-section apply-accreditation text-center shadow-sm mb-4 w-100">
+        <Link to="/accreditation-form" className="text-decoration-none">
+            <div className="card-body">
+                <h2 className="card-title">Apply for Accreditation</h2>
+            </div>
+        </Link>
+    </div>
+
+    <div className="card apply-section apply-expansion text-center shadow-sm mb-4 w-100">
+        <Link to="/Expansionaccreditation-form" className="text-decoration-none">
+            <div className="card-body">
+                <h2 className="card-title">Apply for Expansion of Accreditation</h2>
+            </div>
+        </Link>
+    </div>
+
+    <div className="card apply-section apply-reaccreditation text-center shadow-sm mb-4 w-100">
+        <Link to="/reaccreditation-form" className="text-decoration-none">
+            <div className="card-body">
+                <h2 className="card-title">Apply for Re-Accreditation</h2>
+            </div>
+        </Link>
+    </div>
+</div>
+                {/* New Track Application Section */}
+                <div className="apply-section track-application">
+                    <Link to="/track-application">
+                        <h2 className="track1">Track Your Application</h2>
                     </Link>
                 </div>
-                <div className="apply-section apply-expansion">
-                    <Link to="/Expansionaccreditation-form">
-                        <h2>Apply for Expansion of Accreditation</h2>
-                    </Link>
-                </div>
-                <div className="apply-section apply-reaccreditation">
-                    <Link to="/reaccreditation-form">
-                        <h2>Apply for Re-Accreditation</h2>
-                    </Link>
-                </div>
+
             </main>
 
             {/* Footer */}

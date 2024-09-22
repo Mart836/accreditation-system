@@ -6,6 +6,7 @@ import HomePage from './HomePage'; // Placeholder for the HomePage component
 import AccreditationForm from './AccreditationForm';
 import ReAccreditationForm from './ReAccreditationForm';
 import Expansion from './Expansion';
+import TrackApplication from './applicationtrack'; 
 import './App.css';
 
 function SplashScreen() {
@@ -19,7 +20,7 @@ function SplashScreen() {
 
 function App() {
   const [loading, setLoading] = useState(true); // Controls splash screen visibility
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulating login status
+  const [isLoggedIn] = useState(false); // Simulating login status
 
   useEffect(() => {
     // Show the splash screen for 3 seconds
@@ -39,6 +40,7 @@ function App() {
           {/* Redirect to login if not logged in */}
           <Route path="/" element={isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/login" />} />
           <Route path="/home" element={<HomePage />} />
+          <Route path="/track-application" element={<TrackApplication />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/create-account" element={<CreateAccountPage />} />
           <Route path="/accreditation-form" element={<AccreditationForm />} /> 

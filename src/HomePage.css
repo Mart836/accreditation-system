@@ -1,13 +1,14 @@
 /* Ensure the entire page fits the screen size */
 .home-page {
     font-family: Arial, sans-serif;
-    background-color: rgb(255, 255, 255);
+    background: linear-gradient(135deg, #f8f9fa 50%, #e9ecef 50%);
     min-height: 100vh; /* Ensures it takes at least the full viewport height */
     display: flex;
     flex-direction: column;
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    border-top: 5px solid #ffd900;
 }
 
 /* Header Styling */
@@ -67,6 +68,24 @@
     display: flex;
     gap: 80px;
 }
+.track-application {
+    background-color: aliceblue;
+    border-color: rgb(110, 116, 116);
+    padding: 20px;
+    border: 2px solid;
+    border-radius: 12px;
+    width: 80%; /* Same as .apply-section */
+    max-width: 600px;
+    margin: 20px auto;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+
+.track1 {
+    position: relative;
+    text-align: center;
+    font-size: large;
+}
 
 /* Icon Sizes */
 .notification-icon, .inbox-icon {
@@ -83,25 +102,44 @@ main {
 
 /* Apply Section */
 .apply-section {
-    margin: 20px 0;
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
+    margin: 20px auto; /* Centered with equal margin on top and bottom */
     padding: 20px;
     border: 2px solid;
     border-radius: 12px;
-    width: 80%; /* Responsive width */
-    max-width: 600px;
-    margin: 20px auto;
-    height: auto; 
+    width: 80%; /* Adjust for responsiveness */
+    max-width: 600px; /* Limit the width on larger screens */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+.apply-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.apply-section h2 {
+    color: #007bff;
+    font-size: 1.5rem;
+}
+
+.apply-section:hover h2 {
+    color: #0056b3;
+}
 /* Apply Sections Colors and Borders */
 .apply-accreditation {
-    background-color: yellow;
+    display: flex;
+    background-color: rgb(212, 191, 107);
     border-color: blue;
+    flex-direction: column; /* Stacks the child elements vertically */
+    align-items: center;    /* Centers items horizontally */   
 }
 
 .apply-expansion {
     background-color: lightgreen;
-    border-color: yellow;
+    border-color: rgb(255, 166, 0);
 }
 
 .apply-reaccreditation {

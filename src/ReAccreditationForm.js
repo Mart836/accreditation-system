@@ -390,7 +390,7 @@ const handleAgreeAllChange = (e) => {
     <section className="contact-information">
         <h2>CONTACT INFORMATION</h2>
         <label>
-            Name and title of person completing application (Contact Person):
+            Name and title of person completing application:
             <input
                 type="text"
                 name="contactPerson"

@@ -1,7 +1,9 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore} from 'firebase/firestore';
+//import { getDatabase } from "firebase/database";
+
 
 //import { getAnalytics } from "firebase/analytics";
 
@@ -9,6 +11,7 @@ import { getFirestore } from 'firebase/firestore';
 const firebaseConfig = {
   apiKey: "AIzaSyDXULZo6buD08m76NoUh-vfp1y4IJEHjBg",
   authDomain: "accreditation-system-651ba.firebaseapp.com",
+ // databaseURL: "Acreditation-systemhttps://console.firebase.google.com/project/accreditation-system-651ba/database/accreditation-system-651ba-default-rtdb/data/~2F",
   projectId: "accreditation-system-651ba",
   storageBucket: "accreditation-system-651ba.appspot.com",
   messagingSenderId: "843291971202",
@@ -19,9 +22,11 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+//const database = getDatabase(app);
 //const analytics = getAnalytics(app);
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
 
-export { app, auth,db };
+
+export { app, auth,db};

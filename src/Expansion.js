@@ -125,17 +125,23 @@ const AccreditationForm = () => {
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
+            // Include application status in the form data
+            const formDataWithStatus = {
+                ...formData,
+                applicationStatus: 'Pending',  // Default status
+            };
+    
             // Save form data to Firestore
-            await addDoc(collection(db, 'accreditation_expansion'), formData);
-            alert('Form submitted successfully!');
-            // Optionally, reset form or redirect user
+            await addDoc(collection(db, 'institutions'), formData, formDataWithStatus);
+            alert('Form submitted successfully! Check your email for the acknowledgment letter.');
         } catch (error) {
             console.error('Error adding document: ', error);
             alert('Error submitting form. Please try again.');
         }
     };
+    
 
     return (
         <div className="Expansionaccreditation-form">
@@ -222,7 +228,7 @@ const AccreditationForm = () => {
                     <section className="contact-information">
                         <h2>CONTACT INFORMATION</h2>
                         <label>
-                            Name and title of person completing application (Contact Person):
+                            Name and title of person completing application:
                             <input
                                 type="text"
                                 name="contactPerson"
