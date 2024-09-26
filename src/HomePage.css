@@ -56,36 +56,19 @@
 /* Icons Styling */
 .icons {
     position: absolute;
-    top: 30px;
+    top: -50px;
     right: -20px;
     display: flex;
     gap: 80px;
 }
 .icons2 {
     position: absolute;
-    top: 30px;
+    top: -50px;
     right: 90px;
     display: flex;
     gap: 80px;
 }
-.track-application {
-    background-color: aliceblue;
-    border-color: rgb(110, 116, 116);
-    padding: 20px;
-    border: 2px solid;
-    border-radius: 12px;
-    width: 80%; /* Same as .apply-section */
-    max-width: 600px;
-    margin: 20px auto;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
 
-
-.track1 {
-    position: relative;
-    text-align: center;
-    font-size: large;
-}
 
 /* Icon Sizes */
 .notification-icon, .inbox-icon {
@@ -101,14 +84,14 @@ main {
 }
 
 /* Apply Section */
-.apply-section {
+.apply-section,.track-application {
     display: flex; /* Use flexbox for alignment */
     flex-direction: column; /* Stack content vertically */
     align-items: center; /* Center content horizontally */
     justify-content: center; /* Center content vertically */
-    margin: 20px auto; /* Centered with equal margin on top and bottom */
+    margin: 0.10px auto; /* Centered with equal margin on top and bottom */
     padding: 20px;
-    border: 2px solid;
+    border: 0.1px solid;
     border-radius: 12px;
     width: 80%; /* Adjust for responsiveness */
     max-width: 600px; /* Limit the width on larger screens */
@@ -134,9 +117,12 @@ main {
     background-color: rgb(212, 191, 107);
     border-color: blue;
     flex-direction: column; /* Stacks the child elements vertically */
-    align-items: center;    /* Centers items horizontally */   
+    align-items: center;    /* Centers items horizontally */  
+    text-decoration: none; 
 }
-
+.text-decoration-none {
+    text-decoration: none !important;
+  }
 .apply-expansion {
     background-color: lightgreen;
     border-color: rgb(255, 166, 0);

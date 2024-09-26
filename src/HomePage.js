@@ -167,16 +167,16 @@ const HomePage = () => {
             </div>
         </Link>
     </div>
-</div>
-                {/* New Track Application Section */}
-                <div className="apply-section track-application">
-                    <Link to="/track-application">
-                        <h2 className="track1">Track Your Application</h2>
+    <div className="card apply-section  track-application  text-center shadow-sm mb-4 w-100">
+                    <Link to="/track-application" className="text-decoration-none">
+                    <div className="card-body">
+                        <h2 className="card-title">Track Your Application</h2>
+                        </div>
                     </Link>
                 </div>
+</div>
 
-            </main>
-
+   </main>
             {/* Footer */}
             <footer className="footer">
                 <p>All rights reserved to Namibia Qualification Authority (NQA)</p>

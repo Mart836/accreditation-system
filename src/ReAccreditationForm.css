@@ -10,7 +10,11 @@
     position: relative;
     text-align: center;
 }
-
+.applys{
+    font-family: 'Courier New', Courier, monospace;
+    color: #0056b3;
+    
+}
 .yellow-strip {
     position: relative;
     top: -20;

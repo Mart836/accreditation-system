@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
+import { Form,  Table, Row, Col } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './ReAccreditationForm.css'; // Create this CSS file for styling
 import { db } from './firebase'; // Import Firestore instance
 import { collection, addDoc } from 'firebase/firestore';
@@ -134,7 +136,7 @@ const AccreditationForm = () => {
             };
     
             // Save form data to Firestore
-            await addDoc(collection(db, 'institutions'), formData, formDataWithStatus);
+            await addDoc(collection(db, 'accreditation_expansion'), formData, formDataWithStatus);
             alert('Form submitted successfully! Check your email for the acknowledgment letter.');
         } catch (error) {
             console.error('Error adding document: ', error);
@@ -148,148 +150,171 @@ const AccreditationForm = () => {
             <header className="form-header">
                 <div className="yellow-strip"></div>
                 {currentPage === 0 && (
-                    <h1>APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
+                    <h1 className="applys">APPLICATION FOR EXPANSION OF ACCREDITATION</h1>
                 )}
             </header>
             <form onSubmit={handleSubmit}>
-                {currentPage === 0 && (
+            {currentPage === 0 && (
                     <section className="section-a">
                         <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
                         <p>Please complete all areas of Section A</p>
-                        <label>
-                            Operating name of the institution:
-                            <input
-                                type="text"
-                                name="institutionName"
-                                value={formData.institutionName}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Accreditation number:
-                            <input
-                                type="text"
-                                name="accreditationNumber"
-                                value={formData.accreditationNumber}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Street Address:
-                            <input
-                                type="text"
-                                name="streetAddress"
-                                value={formData.streetAddress}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Mailing Address:
-                            <input
-                                type="text"
-                                name="mailingAddress"
-                                value={formData.mailingAddress}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Telephone number:
-                            <input
-                                type="tel"
-                                name="telephoneNumber"
-                                value={formData.telephoneNumber}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            E-mail Address:
-                            <input
-                                type="email"
-                                name="emailAddress"
-                                value={formData.emailAddress}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
+                        <Form.Group as={Row} controlId="institutionName">
+                            <Form.Label column sm={3}>Operating name of the institution:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="institutionName"
+                                    value={formData.institutionName}
+                                    onChange={handleInputChange2}
+                                    required
+                                    className="compact-input"
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="accreditationNumber">
+                            <Form.Label column sm={3}>Accreditation number:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="accreditationNumber"
+                                    value={formData.accreditationNumber}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="streetAddress">
+                            <Form.Label column sm={3}>Street Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="streetAddress"
+                                    value={formData.streetAddress}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="mailingAddress">
+                            <Form.Label column sm={3}>Mailing Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="mailingAddress"
+                                    value={formData.mailingAddress}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="telephoneNumber">
+                            <Form.Label column sm={3}>Telephone number:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="tel"
+                                    name="telephoneNumber"
+                                    value={formData.telephoneNumber}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="emailAddress">
+                            <Form.Label column sm={3}>E-mail Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="email"
+                                    name="emailAddress"
+                                    value={formData.emailAddress}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
                     </section>
                 )}
-                {currentPage === 1 && (
+
+{currentPage === 1 && (
                     <section className="contact-information">
                         <h2>CONTACT INFORMATION</h2>
-                        <label>
-                            Name and title of person completing application:
-                            <input
-                                type="text"
-                                name="contactPerson"
-                                value={formData.contactPerson}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Telephone no.:
-                            <input
-                                type="tel"
-                                name="contactTelephone"
-                                value={formData.contactTelephone}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Position:
-                            <input
-                                type="text"
-                                name="contactPosition"
-                                value={formData.contactPosition}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Postal Address:
-                            <input
-                                type="text"
-                                name="postalAddress"
-                                value={formData.postalAddress}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
-                        <label>
-                            Email Address:
-                            <input
-                                type="email"
-                                name="contactEmail"
-                                value={formData.contactEmail}
-                                onChange={handleInputChange2}
-                                className="compact-input"
-                                required
-                            />
-                        </label>
+                        <Form.Group as={Row} controlId="contactPerson" >
+                            <Form.Label column sm={3}>Name and title of person completing application:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="contactPerson"
+                                    value={formData.contactPerson}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="contactTelephone">
+                            <Form.Label column sm={3}>Telephone no.:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="tel"
+                                    name="contactTelephone"
+                                    value={formData.contactTelephone}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="contactPosition">
+                            <Form.Label column sm={3}>Position:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="contactPosition"
+                                    value={formData.contactPosition}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="postalAddress">
+                            <Form.Label column sm={3}>Postal Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="postalAddress"
+                                    value={formData.postalAddress}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+
+                        <Form.Group as={Row} controlId="contactEmail">
+                            <Form.Label column sm={3}>Email Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="email"
+                                    name="contactEmail"
+                                    value={formData.contactEmail}
+                                    onChange={handleInputChange2}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
                     </section>
                 )}
+
                 {currentPage === 2 && (
                     <section className="section-b">
                         <h2>SECTION B - INFORMATION ON SERVICES TO BE EXPANDED</h2>
                         <p>Please complete all areas of Section B</p>
                         <p>List all qualifications currently offered by the institution for which expansion is sought: (Additional sheets may be attached if necessary)</p>
-                        <table>
+                        <Table striped bordered hover>
                             <thead>
                                 <tr>
                                     <th>NO</th>
@@ -307,7 +332,7 @@ const AccreditationForm = () => {
                                 {rows.map((row) => (
                                     <tr key={row.id}>
                                         <td>
-                                            <input
+                                            <Form.Control
                                                 type="text"
                                                 name="qualificationNo"
                                                 value={row.qualificationNo}
@@ -316,7 +341,7 @@ const AccreditationForm = () => {
                                             />
                                         </td>
                                         <td>
-                                            <input
+                                            <Form.Control
                                                 type="text"
                                                 name="qualificationTitle"
                                                 value={row.qualificationTitle}
@@ -325,7 +350,7 @@ const AccreditationForm = () => {
                                             />
                                         </td>
                                         <td>
-                                            <input
+                                            <Form.Control
                                                 type="text"
                                                 name="nqfLevel"
                                                 value={row.nqfLevel}
@@ -334,40 +359,40 @@ const AccreditationForm = () => {
                                             />
                                         </td>
                                         <td>
-                                            <label>
-                                                <input
+                                            
+                                                <Form.Check
                                                     type="checkbox"
                                                     name="attendance"
                                                     value="full-time"
                                                     checked={row.attendance.includes('full-time')}
                                                     onChange={(e) => handleCheckboxChange(e, row.id)}
                                                 />
-                                            </label>
+                                            
                                         </td>
                                         <td>
-                                            <label>
-                                                <input
+                                            
+                                                <Form.Check
                                                     type="checkbox"
                                                     name="attendance"
                                                     value="part-time"
                                                     checked={row.attendance.includes('part-time')}
                                                     onChange={(e) => handleCheckboxChange(e, row.id)}
                                                 />
-                                            </label>
+                                            
                                         </td>
                                         <td>
-                                            <label>
-                                                <input
+                                            
+                                                <Form.Check
                                                     type="checkbox"
                                                     name="attendance"
                                                     value="distance"
                                                     checked={row.attendance.includes('distance')}
                                                     onChange={(e) => handleCheckboxChange(e, row.id)}
                                                 />
-                                            </label>
+                                            
                                         </td>
                                         <td>
-                                            <input
+                                            <Form.Control
                                                 type="text"
                                                 name="franchisePartners"
                                                 value={row.franchisePartners}
@@ -376,7 +401,7 @@ const AccreditationForm = () => {
                                             />
                                         </td>
                                         <td>
-                                            <input
+                                            <Form.Control
                                                 type="text"
                                                 name="sites"
                                                 value={row.sites}
@@ -396,7 +421,7 @@ const AccreditationForm = () => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
+                        </Table>
                         <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
                         <input
                             type="file"
