@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
+import { Form,  Table, Row, Col } from 'react-bootstrap';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
-import { db } from './firebase'; // Import Firestore instance
-import { collection, addDoc } from 'firebase/firestore';
-
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AccreditationForm = () => {
     const [formData, setFormData] = useState({
@@ -40,6 +40,10 @@ const AccreditationForm = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [fileNames, setFileNames] = useState([]);
     const [deletedFileNames, setDeletedFileNames] = useState([]);
+    const [declaredFiles, setdeclaredFileNames] = useState([]);
+    const [institutionName, setInstitutionName] = useState("");
+    const storage = getStorage();
+    const db = getFirestore();
     
     
 
@@ -104,16 +108,114 @@ const AccreditationForm = () => {
         }
     };
 
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        const fileNames = files.map(file => file.name);
-        setFileNames(fileNames); // Use setFileNames to update the fileNames state
-    };
-    const handleFileChangeForDeleted = (e) => {
-        const files = Array.from(e.target.files);
-        const fileNames = files.map(file => file.name);
-        setDeletedFileNames(fileNames);
-    };
+    // Handler for uploading files (regular files)
+const handleFileChange = async (event) => {
+    const files = event.target.files;
+    const uploadedFileNames = [];
+    const promises = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        uploadedFileNames.push(file.name);
+
+        // Upload the file to Firebase Storage
+        const storageRef = ref(storage, `documents/${file.name}`);
+        const uploadTask = uploadBytes(storageRef, file).then((snapshot) => {
+            // Get the download URL for the uploaded file
+            return getDownloadURL(snapshot.ref);
+        });
+
+        promises.push(uploadTask);
+    }
+
+    // Resolve all uploads and get download URLs
+    const downloadURLs = await Promise.all(promises);
+
+    // Store metadata in Firestore for uploaded files
+    const docRef = await addDoc(collection(db, "Re-Accreditation-Uploaded Sheet's"), {
+        institutionName: institutionName,
+        fileNames: uploadedFileNames,
+        downloadURLs: downloadURLs,
+        uploadedAt: new Date(),
+    });
+
+    console.log("Document written with ID: ", docRef.id);
+
+    // Update state with uploaded file names
+    setFileNames(uploadedFileNames);
+};
+const handleFileChangeforDeclared = async (event) => {
+    const files = event.target.files;
+    const declaredFiles = [];
+    const promises = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        declaredFiles.push(file.name);
+
+        // Upload the file to Firebase Storage
+        const storageRef = ref(storage, `documents/${file.name}`);
+        const uploadTask = uploadBytes(storageRef, file).then((snapshot) => {
+            // Get the download URL for the uploaded file
+            return getDownloadURL(snapshot.ref);
+        });
+
+        promises.push(uploadTask);
+    }
+
+    // Resolve all uploads and get download URLs
+    const downloadURLs = await Promise.all(promises);
+
+    // Store metadata in Firestore for uploaded files
+    const docRef = await addDoc(collection(db, "declaredRe-Accreditation-Uploaded Sheet's"), {
+        institutionName: institutionName,
+        fileNames: declaredFiles,
+        downloadURLs: downloadURLs,
+        uploadedAt: new Date(),
+    });
+
+    console.log("Document written with ID: ", docRef.id);
+
+    // Update state with uploaded file names
+    setdeclaredFileNames(declaredFiles);
+};
+
+// Handler for uploading deleted files
+const handleFileChangeForDeleted = async (event) => {
+    const files = event.target.files;
+    const deletedUploadedFileNames = [];
+    const promises = [];
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        deletedUploadedFileNames.push(file.name);
+
+        // Upload the file to Firebase Storage
+        const storageRef = ref(storage, `documents/${file.name}`);
+        const uploadTask = uploadBytes(storageRef, file).then((snapshot) => {
+            // Get the download URL for the uploaded file
+            return getDownloadURL(snapshot.ref);
+        });
+
+        promises.push(uploadTask);
+    }
+
+    // Resolve all uploads and get download URLs
+    const downloadURLs = await Promise.all(promises);
+
+    // Store metadata in Firestore for deleted files
+    const docRef = await addDoc(collection(db, "DeletedRe-Accreditation-Uploaded Sheet's"), {
+        institutionName: institutionName,
+        fileNames: deletedUploadedFileNames,
+        downloadURLs: downloadURLs,
+        uploadedAt: new Date(),
+    });
+
+    console.log("Document written with ID: ", docRef.id);
+
+    // Update state with deleted uploaded file names
+    setDeletedFileNames(deletedUploadedFileNames);
+};
     const handleDeclarationChange = (e) => {
         const { name, checked } = e.target;
         setDeclarations((prev) => ({
@@ -187,7 +289,7 @@ const handleAgreeAllChange = (e) => {
                 <div className="yellow-strip"></div>
                 {currentPage === 0 && (
             <>
-                <h1>Re-Accreditation Application Form</h1>
+                <h1 className="applys">Re-Accreditation Application Form</h1>
             </>
         )}
             </header>
@@ -196,72 +298,82 @@ const handleAgreeAllChange = (e) => {
                     <section className="section-a">
                         <h2>SECTION A - TRAINING PROVIDER INFORMATION</h2>
                         <p>Please complete all areas of Section A</p>
-                        <label>
-                            Operating name of the institution:
-                            <input 
-                                type="text" 
-                                name="institutionName" 
-                                className="compact-input" 
-                                value={formData.institutionName} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
-                        <label>
-                            Accreditation number:
-                            <input 
-                                type="text" 
-                                name="accreditationNumber" 
-                                className="compact-input" 
-                                value={formData.accreditationNumber} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
-                        <label>
-                            Street Address:
-                            <input 
-                                type="text" 
-                                name="streetAddress" 
-                                className="compact-input" 
-                                value={formData.streetAddress} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
-                        <label>
-                            Mailing Address:
-                            <input 
-                                type="text" 
-                                name="mailingAddress" 
-                                className="compact-input" 
-                                value={formData.mailingAddress} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
-                        <label>
-                            Telephone number:
-                            <input 
-                                type="tel" 
-                                name="telephoneNumber" 
-                                className="compact-input" 
-                                value={formData.telephoneNumber} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
-                        <label>
-                            E-mail Address:
-                            <input 
-                                type="email" 
-                                name="emailAddress" 
-                                className="compact-input" 
-                                value={formData.emailAddress} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
+                        <Form.Group as={Row} controlId="institutionName">
+                            <Form.Label column sm={3}>Operating name of the institution:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="institutionName"
+                                    value={formData.institutionName}
+                                    onChange={(e) => {
+                                        handleInputChange(e)
+                                        setInstitutionName(e.target.value);
+                                    }}
+                                    required
+                                    className="compact-input"
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="accreditationNumber">
+                            <Form.Label column sm={3}>Accreditation number:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="accreditationNumber"
+                                    value={formData.accreditationNumber}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="streetAddress">
+                            <Form.Label column sm={3}>Street Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="streetAddress"
+                                    value={formData.streetAddress}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="mailingAddress">
+                            <Form.Label column sm={3}>Mailing Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="text"
+                                    name="mailingAddress"
+                                    value={formData.mailingAddress}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="telephoneNumber">
+                            <Form.Label column sm={3}>Telephone number:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="tel"
+                                    name="telephoneNumber"
+                                    value={formData.telephoneNumber}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="emailAddress">
+                            <Form.Label column sm={3}>E-mail Address:</Form.Label>
+                            <Col sm={9}>
+                                <Form.Control
+                                    type="email"
+                                    name="emailAddress"
+                                    value={formData.emailAddress}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </Col>
+                        </Form.Group>
                         <fieldset>
                             <legend>Is the institution privately or publicly owned?</legend>
                             <label>
@@ -273,12 +385,11 @@ const handleAgreeAllChange = (e) => {
                                         checked={formData.ownership === 'private'} 
                                         onChange={handleInputChange}
                                         required 
-                                    />
-                                    Private
+                                    /> Private
                                 </div>
                             </label>
+                            <div className="declaration-item">
                             <label>
-                                <div className="declaration-item">
                                     <input 
                                         type="radio" 
                                         name="ownership" 
@@ -286,37 +397,38 @@ const handleAgreeAllChange = (e) => {
                                         checked={formData.ownership === 'public'} 
                                         onChange={handleInputChange}
                                         required 
-                                    />
-                                    Public
-                                </div>
+                                    /> Public
                             </label>
+                            </div>
                         </fieldset>
-                        <label>
-                            Name of owner(s) or controlling body:
-                            <input 
-                                type="text" 
-                                name="ownerName" 
-                                className="compact-input" 
-                                value={formData.ownerName} 
-                                onChange={handleInputChange}
-                                required 
+                        <Form.Group as={Row} controlId="ownerName">
+                        <Form.Label column sm={3}> Name of owner(s) or controlling body: </Form.Label>
+                        <Col sm={9}>
+                            <Form.Control
+                            type="text" name="ownerName" 
+                            value={formData.ownerName} 
+                            onChange={handleInputChange} 
+                            className="compact-input" 
+                            required 
                             />
-                        </label>
-                        <label>
-                            Identity / Passport number:
-                            <input 
-                                type="text" 
-                                name="identityNumber" 
-                                className="compact-input" 
-                                value={formData.identityNumber} 
-                                onChange={handleInputChange}
-                                required 
-                            />
-                        </label>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="identityNumber">
+                        <Form.Label column sm={3}>Identity / Passport number:</Form.Label>
+                        <Col sm={9}>
+                            <Form.Control
+                            type="text" 
+                            name="identityNumber" 
+                            value={formData.identityNumber} 
+                            onChange={handleInputChange} 
+                            className="compact-input" 
+                            required />
+                        </Col>
+                        </Form.Group>
                         <fieldset>
                             <legend>Since the last accreditation, has the organization:</legend>
+                            <div className="declaration-item">
                             <label>
-                                <div className="declaration-item">
                                     <input 
                                         type="checkbox" 
                                         name="audited" 
@@ -324,10 +436,10 @@ const handleAgreeAllChange = (e) => {
                                         onChange={handleCheckboxChange2} 
                                     />
                                     Been audited or investigated by the NQA or other body
-                                </div>
                             </label>
+                            </div>
+                            <div className="declaration-item">
                             <label>
-                                <div className="declaration-item">
                                     <input 
                                         type="checkbox" 
                                         name="offence" 
@@ -335,10 +447,10 @@ const handleAgreeAllChange = (e) => {
                                         onChange={handleCheckboxChange2} 
                                     />
                                     Committed an offence under section 13 of the Act
-                                </div>
                             </label>
+                            </div>
+                            <div className="declaration-item">
                             <label>
-                                <div className="declaration-item">
                                     <input 
                                         type="checkbox" 
                                         name="changes" 
@@ -346,10 +458,10 @@ const handleAgreeAllChange = (e) => {
                                         onChange={handleCheckboxChange2} 
                                     />
                                     Made any changes to existing qualifications
-                                </div>
                             </label>
+                            </div>
+                            <div className="declaration-item">
                             <label>
-                                <div className="declaration-item">
                                     <input 
                                         type="checkbox" 
                                         name="selfEvaluation" 
@@ -357,8 +469,8 @@ const handleAgreeAllChange = (e) => {
                                         onChange={handleCheckboxChange2} 
                                     />
                                     Undertaken any formal self-evaluation or internal audit
-                                </div>
                             </label>
+                            </div>
                             {/* Add file input for document upload */}
                     <div className="upload-section">
                         <label htmlFor="documentUpload" className="upload-label">Attach Documentation:</label>
@@ -367,16 +479,16 @@ const handleAgreeAllChange = (e) => {
                             id="documentUpload"
                             name="documentUpload"
                             multiple
-                            onChange={handleFileChange} // Capture file changes
+                            onChange={handleFileChangeforDeclared} // Capture file changes
                         />
                     </div>
 
                     {/* Display uploaded file names */}
-                    {fileNames.length > 0 && (
+                    {declaredFiles.length > 0 && (
                             <div className="file-names">
                                 <p>Uploaded files:</p>
                                 <ul>
-                                    {fileNames.map((fileName, index) => (
+                                    {declaredFiles.map((fileName, index) => (
                                         <li key={index}>{fileName}</li>
                                     ))}
                                 </ul>
@@ -389,61 +501,66 @@ const handleAgreeAllChange = (e) => {
                 {currentPage === 1 && (
     <section className="contact-information">
         <h2>CONTACT INFORMATION</h2>
-        <label>
-            Name and title of person completing application:
-            <input
-                type="text"
-                name="contactPerson"
-                className="compact-input"
-                value={formData.contactPerson}
-                onChange={handleInputChange}
-                required
-            />
-        </label>
-        <label>
-            Telephone no.:
-            <input
-                type="tel"
-                name="contactTelephone"
-                className="compact-input"
-                value={formData.contactTelephone}
-                onChange={handleInputChange}
-                required
-            />
-        </label>
-        <label>
-            Position:
-            <input
-                type="text"
-                name="contactPosition"
-                className="compact-input"
-                value={formData.contactPosition}
-                onChange={handleInputChange}
-                required
-            />
-        </label>
-        <label>
-            Postal Address:
-            <input
-                type="text"
-                name="postalAddress"
-                className="compact-input"
-                value={formData.postalAddress}
-                onChange={handleInputChange}
-                required
-            />
-        </label>
-        <label>
-            Email Address:
-            <input
-                type="email"
-                name="contactEmail"
-                className="compact-input"
-                value={formData.contactEmail}
-                onChange={handleInputChange}
-                required
-            />
-        </label>
+        <Form.Group as={Row} controlId="contactPerson" >
+           <Form.Label column sm={3}>Name and title of person completing application:</Form.Label>
+                <Col sm={9}>
+                    <Form.Control
+                     type="text"
+                     name="contactPerson"
+                     value={formData.contactPerson}
+                     onChange={handleInputChange}
+                     required
+                    />
+                    </Col>
+         </Form.Group>
+         <Form.Group as={Row} controlId="contactTelephone">
+            <Form.Label column sm={3}>Telephone no.:</Form.Label>
+                <Col sm={9}>
+                  <Form.Control
+                    type="tel"
+                    name="contactTelephone"
+                    value={formData.contactTelephone}
+                    onChange={handleInputChange}
+                    required
+                />
+                </Col>
+         </Form.Group>
+         <Form.Group as={Row} controlId="contactPosition">
+            <Form.Label column sm={3}>Position:</Form.Label>
+                <Col sm={9}>
+                <Form.Control
+                    type="text"
+                    name="contactPosition"
+                    value={formData.contactPosition}
+                    onChange={handleInputChange}
+                    required
+                />
+                </Col>
+         </Form.Group>
+         <Form.Group as={Row} controlId="postalAddress">
+            <Form.Label column sm={3}>Postal Address:</Form.Label>
+            <Col sm={9}>
+                <Form.Control
+                    type="text"
+                    name="postalAddress"
+                    value={formData.postalAddress}
+                    onChange={handleInputChange}
+                    required
+                />
+            </Col>
+         </Form.Group>
+         <Form.Group as={Row} controlId="contactEmail">
+            <Form.Label column sm={3}>Email Address:</Form.Label>
+                <Col sm={9}>
+                    <Form.Control
+                        type="email"
+                        name="contactEmail"
+                        value={formData.contactEmail}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </Col>
+         </Form.Group>
     </section>
 )}
 
@@ -454,7 +571,7 @@ const handleAgreeAllChange = (e) => {
         <p>Please complete all areas of Section B</p>
         <h3>SCOPE OF SERVICES</h3>
         <p>List all qualifications currently offered by the institution for which re-accreditation is sought:</p>
-        <table>
+        <Table striped bordered hover>
             <thead>
                 <tr>
                     <th>NO</th>
@@ -471,21 +588,21 @@ const handleAgreeAllChange = (e) => {
             <tbody>
                 {rows.map((row, index) => (
                     <tr key={row.id}>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="qualificationNo"
                             className="compact-input"
                             value={row.qualificationNo}
                             onChange={(e) => handleRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="qualificationTitle"
                             className="compact-input"
                             value={row.qualificationTitle}
                             onChange={(e) => handleRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="nqfLevel"
                             className="compact-input"
@@ -494,7 +611,7 @@ const handleAgreeAllChange = (e) => {
                         /></td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="fullTime"
                                     checked={row.fullTime}
@@ -504,7 +621,7 @@ const handleAgreeAllChange = (e) => {
                         </td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="partTime"
                                     checked={row.partTime}
@@ -514,7 +631,7 @@ const handleAgreeAllChange = (e) => {
                         </td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="distance"
                                     checked={row.distance}
@@ -522,14 +639,14 @@ const handleAgreeAllChange = (e) => {
                                 />
                             </label>
                         </td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="franchisePartners"
                             className="compact-input"
                             value={row.franchisePartners}
                             onChange={(e) => handleRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="sites"
                             className="compact-input"
@@ -542,7 +659,7 @@ const handleAgreeAllChange = (e) => {
                     </tr>
                 ))}
             </tbody>
-        </table>
+        </Table>
         <button type="button" onClick={addRow} className="add-row-button">Add Row</button>
 
         {/* Hidden file input for current qualifications */}
@@ -569,7 +686,7 @@ const handleAgreeAllChange = (e) => {
         )}
 
         <h3>List qualifications no longer offered / Qualifications that must be deleted from the Register:</h3>
-        <table>
+        <Table striped bordered hover>
             <thead>
                 <tr>
                     <th>NO</th>
@@ -586,21 +703,21 @@ const handleAgreeAllChange = (e) => {
             <tbody>
                 {deletedRows.map((row, index) => (
                     <tr key={row.id}>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="qualificationNo"
                             className="compact-input"
                             value={row.qualificationNo}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="qualificationTitle"
                             className="compact-input"
                             value={row.qualificationTitle}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="nqfLevel"
                             className="compact-input"
@@ -609,7 +726,7 @@ const handleAgreeAllChange = (e) => {
                         /></td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="fullTime"
                                     checked={row.fullTime}
@@ -619,7 +736,7 @@ const handleAgreeAllChange = (e) => {
                         </td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="partTime"
                                     checked={row.partTime}
@@ -629,7 +746,7 @@ const handleAgreeAllChange = (e) => {
                         </td>
                         <td>
                             <label>
-                                <input
+                                <Form.Check
                                     type="checkbox"
                                     name="distance"
                                     checked={row.distance}
@@ -637,14 +754,14 @@ const handleAgreeAllChange = (e) => {
                                 />
                             </label>
                         </td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="franchisePartners"
                             className="compact-input"
                             value={row.franchisePartners}
                             onChange={(e) => handleDeletedRowChange(e, index)}
                         /></td>
-                        <td><input
+                        <td><Form.Control
                             type="text"
                             name="sites"
                             className="compact-input"
@@ -657,7 +774,7 @@ const handleAgreeAllChange = (e) => {
                     </tr>
                 ))}
             </tbody>
-        </table>
+        </Table>
         <button type="button" onClick={addDeletedRow} className="add-row-button">Add Row</button>
 
         {/* Hidden file input for deleted qualifications */}

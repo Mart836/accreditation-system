@@ -4,14 +4,17 @@ import nextIcon from './next-icon.png';
 import { Form,  Table, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import './ReAccreditationForm.css'; // Create this CSS file for styling
-import { db } from './firebase'; // Import Firestore instance
-import { collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AccreditationForm = () => {
     const [agreeAll, setAgreeAll] = useState(false);
     const [rows, setRows] = useState([{ id: Date.now(), qualificationNo: '', qualificationTitle: '', nqfLevel: '', attendance: [], franchisePartners: '', sites: '' }]);
     const [currentPage, setCurrentPage] = useState(0);
     const [fileNames, setFileNames] = useState([]);
+    const [institutionName, setInstitutionName] = useState("");
+    const storage = getStorage();
+    const db = getFirestore();
 
     // State for form fields
     const [formData, setFormData] = useState({
@@ -119,10 +122,41 @@ const AccreditationForm = () => {
     };
 
     // Handler for file input change
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        const fileNames = files.map(file => file.name);
-        setFileNames(fileNames);
+    const handleFileChange = async (event) => {
+        const files = event.target.files;
+        const uploadedFileNames = [];
+        const promises = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            uploadedFileNames.push(file.name);
+
+            // Upload the file to Firebase Storage
+            const storageRef = ref(storage, `documents/${file.name}`);
+            const uploadTask = uploadBytes(storageRef, file).then((snapshot) => {
+                // Get the download URL for the uploaded file
+                return getDownloadURL(snapshot.ref);
+            });
+
+            promises.push(uploadTask);
+        }
+
+        // Resolve all uploads and get download URLs
+        const downloadURLs = await Promise.all(promises);
+
+        // Store metadata in Firestore
+        const docRef = await addDoc(collection(db, "Expansion-Accreditation-Uploaded Sheet's"), {
+            institutionName: institutionName,
+            fileNames: uploadedFileNames,
+            downloadURLs: downloadURLs,
+            category: 'Courses to be Expanded',
+            uploadedAt: new Date(),
+        });
+
+        console.log("Document written with ID: ", docRef.id);
+
+        // Update the state with the file names
+        setFileNames(uploadedFileNames);
     };
     // Handle form submission
     const handleSubmit = async (e) => {
@@ -165,7 +199,10 @@ const AccreditationForm = () => {
                                     type="text"
                                     name="institutionName"
                                     value={formData.institutionName}
-                                    onChange={handleInputChange2}
+                                    onChange={(e) => {
+                                        handleInputChange2(e)
+                                        setInstitutionName(e.target.value);
+                                    }}
                                     required
                                     className="compact-input"
                                 />
