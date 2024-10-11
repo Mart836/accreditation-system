@@ -127,6 +127,18 @@ main {
     background-color: lightgreen;
     border-color: rgb(255, 166, 0);
 }
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    flex: 1 1 20%; /* Adjust the percentage as needed */
+    margin: 10px;
+    height: fit-content;
+}
+
 
 .apply-reaccreditation {
     background-color: lightblue;

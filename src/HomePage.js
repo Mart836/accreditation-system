@@ -143,10 +143,11 @@ const HomePage = () => {
             
             {/* Main Content Section */}
             <main>
-            <div className="container my-5 d-flex flex-column align-items-center">
+            <div className="container my-5 d-flex flex-row align-items-center justify-content-center flex-wrap">
     <div className="card apply-section apply-accreditation text-center shadow-sm mb-4 w-100">
         <Link to="/accreditation-form" className="text-decoration-none">
             <div className="card-body">
+            <i className="material-icons">verified</i>
                 <h2 className="card-title">Apply for Accreditation</h2>
             </div>
         </Link>
@@ -155,6 +156,7 @@ const HomePage = () => {
     <div className="card apply-section apply-expansion text-center shadow-sm mb-4 w-100">
         <Link to="/Expansionaccreditation-form" className="text-decoration-none">
             <div className="card-body">
+            <i className="material-icons">open_in_full</i>
                 <h2 className="card-title">Apply for Expansion of Accreditation</h2>
             </div>
         </Link>
@@ -163,6 +165,7 @@ const HomePage = () => {
     <div className="card apply-section apply-reaccreditation text-center shadow-sm mb-4 w-100">
         <Link to="/reaccreditation-form" className="text-decoration-none">
             <div className="card-body">
+            <i className="material-icons">refresh</i>
                 <h2 className="card-title">Apply for Re-Accreditation</h2>
             </div>
         </Link>
@@ -170,6 +173,7 @@ const HomePage = () => {
     <div className="card apply-section  track-application  text-center shadow-sm mb-4 w-100">
                     <Link to="/track-application" className="text-decoration-none">
                     <div className="card-body">
+                    <i className="material-icons">search</i>
                         <h2 className="card-title">Track Your Application</h2>
                         </div>
                     </Link>
