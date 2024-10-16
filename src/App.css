@@ -16,8 +16,8 @@
     width: 400px; /* Set the width of the logo */
     height: auto; /* Maintain aspect ratio */
     position: relative; /* Use relative positioning if you want to position it based on its normal position */
-    top: -21px; /* Move the logo 20px down from its normal position */
-    left: -45px; /* Move the logo 50px to the right from its normal position */
+    top: -19px; /* Move the logo 20px down from its normal position */
+    left: -35px; /* Move the logo 50px to the right from its normal position */
     /* You can also use absolute positioning if you want more control over its placement */
     /* position: absolute; */
     /* top: 20px; */
@@ -35,19 +35,23 @@
     flex-direction: column;
     height: 100vh;
     font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #f8f9fa 50%, #e9ecef 50%);
   }
   
   /* Header remains at the top */
   .login-header {
     width: 100%;
-    background-color: yellow; /* Yellow stripe at the top */
+    background: linear-gradient(135deg, #FFA500 50%, #FF8C00 50%); /* Yellow stripe at the top */
     text-align: center;
     padding: 10px;
   }
   
+  
   .login-header h1 {
     margin: 0;
     font-size: 24px;
+    color: #ffffff;
+    font-weight: 200;
   }
   
   /* Form wrapper to center the login form */
@@ -77,6 +81,7 @@
   .login-form label,.create-account-form label {
     font-size: 14px;
     margin-bottom: 5px;
+    
   }
   
   .login-form input,.create-account-form input {
