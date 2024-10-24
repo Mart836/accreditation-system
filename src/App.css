@@ -35,7 +35,7 @@
     flex-direction: column;
     height: 100vh;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #f8f9fa 50%, #e9ecef 50%);
+    background: linear-gradient(135deg, #f8f9fa 60%, #e9ecef 40%);
   }
   
   /* Header remains at the top */
