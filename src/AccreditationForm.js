@@ -202,17 +202,30 @@ const AccreditationForm = () => {
      // Handle form submission
      const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
+        // Generate a unique accreditation reference number
+        const timestamp = Date.now(); // Get the timestamp (in milliseconds)
+        const randomComponent = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
+        const accreditationNumber = `${timestamp}${randomComponent}`.slice(0, 13); 
+    
         try {
-            // Save form data to Firestore
-            await addDoc(collection(db, 'Accreditation'), formData);
-            alert('Form submitted successfully!');
-            // Optionally, reset form or redirect user
+            // Include the accreditation number in the form data
+            const submissionData = { ...formData, accreditationNumber };
+    
+            // Save form data to Firestore with the accreditation number
+            await addDoc(collection(db, 'Accreditation'), submissionData);
+    
+            // Show the accreditation number to the user
+            alert(`Form submitted successfully! Your accreditation number is: ${accreditationNumber}`);
+            
+            // Optionally, reset the form or redirect user here
+    
         } catch (error) {
             console.error('Error adding document: ', error);
             alert('Error submitting form. Please try again.');
         }
     };
+    
 
     return (
         <div className="accreditation-form">
