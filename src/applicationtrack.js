@@ -1,40 +1,39 @@
 import React, { useState } from 'react';
 import { db } from './firebase'; // Import Firestore instance
 import './ReAccreditationForm.css';
-import { collection, query, where, getDocs } from 'firebase/firestore'; // Add necessary imports
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Button, Form, Alert, Modal } from 'react-bootstrap';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const TrackApplication = () => {
     const [referenceId, setReferenceId] = useState('');
     const [status, setStatus] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    // Fetch the application status based on the accreditation number
+    // Function to fetch the application status
     const handleTrack = async () => {
         try {
-            // Array of possible collections to check
             const collections = ['Accreditation', 'accreditation_expansion', 're_accreditation'];
-            
-            // Flag to check if a result was found
             let found = false;
-            
+
             for (let collectionName of collections) {
                 const q = query(
                     collection(db, collectionName),
                     where("accreditationNumber", "==", referenceId.trim())
                 );
-    
+
                 const querySnapshot = await getDocs(q);
-    
+
                 if (!querySnapshot.empty) {
-                    const docData = querySnapshot.docs[0].data(); // Get the first matching document
-                    console.log("Document found:", docData); // Log document data for debugging
+                    const docData = querySnapshot.docs[0].data();
+                    console.log("Document found:", docData);
                     setStatus(docData.applicationStatus || "No status yet");
                     found = true;
-                    break; // Exit loop once a matching application is found
+                    break;
                 }
             }
-    
+
             if (!found) {
                 alert('No application found with that accreditation number.');
                 setStatus(null);
@@ -45,9 +44,8 @@ const TrackApplication = () => {
             setStatus(null);
         }
     };
-    
 
-    // Function to print the acknowledgment letter
+    // Function to print acknowledgment letter
     const handlePrintAcknowledgment = () => {
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`<h1>Acknowledgment Letter</h1>`);
@@ -58,7 +56,30 @@ const TrackApplication = () => {
         printWindow.print();
     };
 
-    // Function to handle modal display for payment options
+    // Function to generate PDFs for each type of quotation
+    const generateQuotationPDF = (type, amount) => {
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text("Quotation for Accreditation Service", 14, 20);
+
+        doc.setFontSize(12);
+        doc.text(`Service: ${type}`, 14, 30);
+        doc.text(`Amount: N$ ${amount}`, 14, 40);
+
+        // Create a table with itemized data
+        doc.autoTable({
+            startY: 50,
+            head: [['Description', 'Amount']],
+            body: [
+                [`Quotation for ${type}`, `N$ ${amount}`],
+            ],
+        });
+
+        doc.text("Thank you for choosing our services.", 14, 90);
+        doc.save(`${type}_Quotation.pdf`);
+    };
+
+    // Function to show modal for payment options
     const handleShowModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
@@ -116,10 +137,26 @@ const TrackApplication = () => {
                                 <Modal.Body>
                                     <p>Please select an option below:</p>
                                     <ul>
-                                        <li>Print Quotation for Accreditation</li>
-                                        <li>Print Quotation for Expansion of Accreditation</li>
-                                        <li>Print Quotation for Re-accreditation</li>
-                                        <li>Proceed with Online Payment</li>
+                                        <li>
+                                            <Button variant="outline-primary" onClick={() => generateQuotationPDF("Accreditation", 4500)}>
+                                                Print Quotation for Accreditation (N$ 4500)
+                                            </Button>
+                                        </li>
+                                        <li>
+                                            <Button variant="outline-primary" onClick={() => generateQuotationPDF("Expansion of Accreditation", 5500)}>
+                                                Print Quotation for Expansion of Accreditation (N$ 5500)
+                                            </Button>
+                                        </li>
+                                        <li>
+                                            <Button variant="outline-primary" onClick={() => generateQuotationPDF("Re-accreditation", 7500)}>
+                                                Print Quotation for Re-accreditation (N$ 7500)
+                                            </Button>
+                                        </li>
+                                        <li>
+                                            <Button variant="outline-success">
+                                                Proceed with Online Payment
+                                            </Button>
+                                        </li>
                                     </ul>
                                 </Modal.Body>
                                 <Modal.Footer>
