@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { db, messaging } from "./firebase"; // Ensure this has your Firebase setup
+import { collection, onSnapshot } from "firebase/firestore";
+import { getToken, onMessage } from "firebase/messaging";
 import logo from './brand.png'; // Ensure this path is correct
 import './HomePage.css'; // Your CSS file for styling
 import notificationBell from './assets/icons/notification-bell.png'; // Ensure this path is correct
@@ -21,29 +24,57 @@ const HomePage = () => {
     const messageDropdownRef = useRef(null);
     const notificationDropdownRef = useRef(null);
 
-    // Optionally populate mock data
+    // Real-time listener for notifications and messages
     useEffect(() => {
-        const mockNotifications = ['New comment on your post', 'You have a new follower'];
-        const mockMessages = ['Hi there! How are you?', "Don't forget the meeting at 3 PM"];
-        setNotifications(mockNotifications);
-        setMessages(mockMessages);
-        setUnreadNotifications(mockNotifications.length); // Initially, all notifications are unread
-        setUnreadMessages(mockMessages.length); // Initially, all messages are unread
+        const unsubscribeNotifications = onSnapshot(collection(db, "notifications"), (snapshot) => {
+            const notificationsData = snapshot.docs.map(doc => doc.data());
+            setNotifications(notificationsData);
+            setUnreadNotifications(notificationsData.length);
+        });
+
+        const unsubscribeMessages = onSnapshot(collection(db, "messages"), (snapshot) => {
+            const messagesData = snapshot.docs.map(doc => doc.data());
+            setMessages(messagesData);
+            setUnreadMessages(messagesData.length);
+        });
+
+        return () => {
+            unsubscribeNotifications();
+            unsubscribeMessages();
+        };
     }, []);
 
-    // Function to handle notification icon click
+    useEffect(() => {
+        const requestPermission = async () => {
+            try {
+                const token = await getToken(messaging, { vapidKey: "YOUR_VAPID_KEY" });
+                if (token) {
+                    console.log("FCM token:", token);
+                }
+            } catch (error) {
+                console.error("Permission denied or error in FCM token", error);
+            }
+        };
+
+        requestPermission();
+
+        // Handle foreground FCM messages
+        onMessage(messaging, (payload) => {
+            console.log("Message received in foreground:", payload);
+            alert("New notification: " + payload.notification.body);
+        });
+    }, []);
+
     const handleNotificationClick = () => {
         setShowNotifications(!showNotifications);
         if (unreadNotifications > 0) setUnreadNotifications(0); // Mark all notifications as read
     };
 
-    // Function to handle message icon click
     const handleMessageClick = () => {
         setShowMessages(!showMessages);
         if (unreadMessages > 0) setUnreadMessages(0); // Mark all messages as read
     };
 
-    // Function to handle reply submission
     const handleReplySubmit = () => {
         if (reply) {
             alert(`Reply sent: ${reply}`);
@@ -54,7 +85,6 @@ const HomePage = () => {
     // Hide dropdown when clicking outside of it
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // Check if click was outside both the message icon and the dropdown
             if (
                 messageRef.current &&
                 !messageRef.current.contains(event.target) && 
@@ -63,7 +93,6 @@ const HomePage = () => {
             ) {
                 setShowMessages(false);
             }
-            // Similarly for notifications
             if (
                 notificationRef.current &&
                 !notificationRef.current.contains(event.target) && 
@@ -82,13 +111,11 @@ const HomePage = () => {
 
     return (
         <div className="container-fluid home-page bg-light">
-            {/* Logo and Header Section */}
             <header className="header">
                 <img src={logo} alt="Logo" className="logo" />
                 <div className="welcome-header">
                     <h1>Welcome to Our Site</h1>
                     <div className="icons2" ref={notificationRef}>
-                        {/* Use custom icons */}
                         <img 
                             src={notificationBell} 
                             alt="Notification Bell" 
@@ -111,24 +138,36 @@ const HomePage = () => {
                         )}
                     </div>
                 </div>
-                {showNotifications && notifications.length > 0 && (
+
+                {/* Notification Dropdown */}
+                {showNotifications && (
                     <div className="notification-dropdown" ref={notificationDropdownRef}>
                         <h4>Notifications</h4>
-                        <ul>
-                            {notifications.map((notification, index) => (
-                                <li key={index}>{notification}</li>
-                            ))}
-                        </ul>
+                        {notifications.length > 0 ? (
+                            <ul>
+                                {notifications.map((notification, index) => (
+                                    <li key={index}>{notification}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No notifications</p>
+                        )}
                     </div>
                 )}
-                {showMessages && messages.length > 0 && (
+
+                {/* Messages Dropdown */}
+                {showMessages && (
                     <div className="message-dropdown" ref={messageDropdownRef}>
                         <h4>Messages</h4>
-                        <ul>
-                            {messages.map((message, index) => (
-                                <li key={index}>{message}</li>
-                            ))}
-                        </ul>
+                        {messages.length > 0 ? (
+                            <ul>
+                                {messages.map((message, index) => (
+                                    <li key={index}>{message}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No messages</p>
+                        )}
                         <div className="message-reply">
                             <textarea 
                                 value={reply} 

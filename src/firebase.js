@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getMessaging } from "firebase/messaging";
 import { getFirestore} from 'firebase/firestore';
 //import { getDatabase } from "firebase/database";
 
@@ -19,6 +20,7 @@ const firebaseConfig = {
   measurementId: "G-4C7841119X"
 };
 
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -27,6 +29,13 @@ const db = getFirestore(app);
 
 // Initialize Firebase Authentication and get a reference to the service
 const auth = getAuth(app);
+// Initialize Firebase Messaging
+let messaging;
+try {
+    messaging = getMessaging(app);
+} catch (error) {
+    console.warn("Firebase Messaging is not supported in this environment.", error);
+}
 
 
-export { app, auth,db};
+export { app, auth,db,messaging };
