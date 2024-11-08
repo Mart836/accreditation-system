@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import './App.css'; // Import the CSS styles
 import logo from './brand.png';
 import { auth } from './firebase'; // Import the auth object
-import { signInWithEmailAndPassword } from "firebase/auth"; // Import signInWithEmailAndPassword function
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth"; // Import the necessary functions
 
 function LoginPage() {
   const navigate = useNavigate(); // Initialize useNavigate
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null); // For storing any error messages
+  const [resetMessage, setResetMessage] = useState(null); // Message for password reset
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
@@ -23,6 +24,17 @@ function LoginPage() {
       // Handle and display error if authentication fails
       setError(err.message);
       console.error('Authentication error:', err);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setResetMessage('Password reset email sent! Check your inbox.');
+      setError(null); // Clear any previous errors
+    } catch (err) {
+      setError('Failed to send reset email. Make sure you entered a valid email address.');
+      console.error('Password reset error:', err);
     }
   };
 
@@ -63,7 +75,14 @@ function LoginPage() {
           <button type="submit" className="login-button">Login</button>
 
           {/* Display error message if authentication fails */}
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="text-danger">{error}</p>}
+          {resetMessage && <p className="text-success">{resetMessage}</p>}
+
+          <div className="d-flex justify-content-between align-items-center mt-2">
+            <button type="button" className="btn btn-link p-0" onClick={handlePasswordReset}>
+              Forgot Password?
+            </button>
+          </div>
 
           <div className="create-account">
             <p>Don't have an account? <Link to="/create-account">Create one</Link></p>

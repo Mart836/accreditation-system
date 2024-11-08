@@ -3,7 +3,7 @@ import backIcon from './back-icon.png';
 import nextIcon from './next-icon.png';
 import { Form,  Table, Row, Col } from 'react-bootstrap';
 import './ReAccreditationForm.css'; // Create this CSS file for styling
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, collection, query, where, getDocs,addDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AccreditationForm = () => {
@@ -27,7 +27,7 @@ const AccreditationForm = () => {
         postalAddress: '',
         contactEmail: ''
     });
-
+    
     const [agreeAll, setAgreeAll] = useState(false);
     const [declarations, setDeclarations] = useState({
         declaration: false,
@@ -42,6 +42,7 @@ const AccreditationForm = () => {
     const [deletedFileNames, setDeletedFileNames] = useState([]);
     const [declaredFiles, setdeclaredFileNames] = useState([]);
     const [institutionName, setInstitutionName] = useState("");
+    const [accreditationError, setAccreditationError] = useState('');
     const storage = getStorage();
     const db = getFirestore();
     
@@ -271,6 +272,28 @@ const handleAgreeAllChange = (e) => {
      const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Step 1: Check if accreditation number exists in the Firestore collection
+        const accreditationNumber = formData.accreditationNumber;
+        if (!accreditationNumber) {
+            alert('Please enter an accreditation number');
+            return;
+        }
+
+        const q = query(collection(db, 'Accreditation'), where('accreditationNumber', '==', accreditationNumber));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            // Accreditation number not found
+            setAccreditationError('Wrong accreditation number. Please enter a valid one.');
+             // Alert the user that the accreditation number is incorrect
+        alert('Wrong accreditation number. Please enter a valid one.');
+            return; // Prevent form submission
+        } else {
+            // Reset error if accreditation number is valid
+            setAccreditationError('');
+        }
+
+        // Step 2: Proceed with form submission if accreditation number is valid
         try {
             // Save form data to Firestore
             await addDoc(collection(db, 'Re-accreditation'), formData);
@@ -322,9 +345,13 @@ const handleAgreeAllChange = (e) => {
                                     name="accreditationNumber"
                                     value={formData.accreditationNumber}
                                     onChange={handleInputChange}
+                                    isInvalid={accreditationError !== ''} 
                                     required
                                 />
                             </Col>
+                            <Form.Control.Feedback type="invalid">
+                               {accreditationError}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group as={Row} controlId="streetAddress">
                             <Form.Label column sm={3}>Street Address:</Form.Label>

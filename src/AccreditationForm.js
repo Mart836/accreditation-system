@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import backIcon from './back-icon.png'; 
 import nextIcon from './next-icon.png';
+import { getAuth } from 'firebase/auth';
 import { Form,  Table, Row, Col } from 'react-bootstrap';
 import './AccreditationForm.css'; // Create this CSS file for styling
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
@@ -204,24 +205,46 @@ const AccreditationForm = () => {
         e.preventDefault();
     
         // Generate a unique accreditation reference number
-        const timestamp = Date.now(); // Get the timestamp (in milliseconds)
-        const randomComponent = Math.floor(Math.random() * 10000); // Generate a random number between 0 and 9999
-        const accreditationNumber = `${timestamp}${randomComponent}`.slice(0, 13); 
+        const timestamp = Date.now();
+        const randomComponent = Math.floor(Math.random() * 10000);
+        const accreditationNumber = `${timestamp}${randomComponent}`.slice(0, 13);
+    
+        // Get the currently logged-in user
+        const auth = getAuth();
+        const user = auth.currentUser;
+    
+        if (!user) {
+            alert("Please log in to submit the application.");
+            return;
+        }
     
         try {
-            // Include the accreditation number in the form data
-            const submissionData = { ...formData, accreditationNumber };
+            // Include the accreditation number and application status in the form data
+            const submissionData = { 
+                ...formData, 
+                accreditationNumber,
+                applicationStatus: "Submitted"
+            };
     
-            // Save form data to Firestore with the accreditation number
+            // Save form data to Firestore
             await addDoc(collection(db, 'Accreditation'), submissionData);
     
-            // Show the accreditation number to the user
-            alert(`Form submitted successfully! Your accreditation number is: ${accreditationNumber}`);
-            
-            // Optionally, reset the form or redirect user here
+            // Create an acknowledgment message
+            const acknowledgmentMessage = `Your form has been submitted successfully! Your accreditation number is: ${accreditationNumber}. You can use this number to track your application.`;
+    
+            // Save the acknowledgment message in Firestore for the logged-in user
+            await addDoc(collection(db, 'Acknowledgments'), {
+                userId: user.uid,
+                message: acknowledgmentMessage,
+                accreditationNumber: accreditationNumber,
+                timestamp: new Date(),
+            });
+    
+            // Alert the user
+            alert(acknowledgmentMessage);
     
         } catch (error) {
-            console.error('Error adding document: ', error);
+            console.error('Error submitting application: ', error);
             alert('Error submitting form. Please try again.');
         }
     };
